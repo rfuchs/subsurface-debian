@@ -1,0 +1,44 @@
+#!/bin/bash
+
+set -e
+
+LAST_BUILD_ID=~/.sub.last.build.id
+BUILDDIR=~/tmp
+REPO=~/htdocs/dfx.at/subsurface-debian
+RELEASES='sid bullseye buster'
+ARCHS='amd64 i386'
+
+test -n "$SUBSURFACE_DEBIAN_SRCDIR"
+
+cd "$BUILDDIR"
+mkdir build.$$
+cd build.$$
+
+export VERSION=$(date +%Y%m%d%H%M)
+
+export LAST_BUILD_ID
+export THIS_BUILD_ID="$LAST_BUILD_ID.new"
+if ! "$SUBSURFACE_DEBIAN_SRCDIR"/beta/create-source-package; then
+	cd ..
+	rm -rf build.$$
+	exit
+fi
+
+for RELEASE in $RELEASES; do
+	export RELEASE
+	mkdir "$RELEASE"
+	cd "$RELEASE"
+	"$SUBSURFACE_DEBIAN_SRCDIR"/beta/create-debian-build
+	for ARCH in $ARCHS; do
+		sudo cowbuilder --build --buildplace ~/var/cache/pbuilder/build --buildresult "$BUILDDIR" --basepath ~/var/cache/pbuilder/base-"$RELEASE"-"$ARCH".cow --aptcache ~/var/cache/aptcache subsurface-beta_"$VERSION"-1~"$RELEASE".dsc
+		reprepro -Vb "$REPO" -C main includedeb "$RELEASE" "$BUILDDIR"/subsurface-beta_"$VERSION"-1~"$RELEASE"_"$ARCH".deb
+		reprepro -Vb "$REPO" -C main includedeb "$RELEASE" "$BUILDDIR"/subsurface-beta-dbgsym_"$VERSION"-1~"$RELEASE"_"$ARCH".deb
+	done
+	reprepro -Vb "$REPO" -C main includedsc "$RELEASE" "$BUILDDIR"/subsurface-beta_"$VERSION"-1~"$RELEASE".dsc
+	cd ..
+done
+
+cd ..
+rm -rf build.$$
+
+mv -f "THIS_BUILD_ID" "$LAST_BUILD_ID"
