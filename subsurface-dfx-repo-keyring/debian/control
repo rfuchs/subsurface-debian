@@ -1,0 +1,16 @@
+Source: subsurface-dfx-repo-keyring
+Section: misc
+Priority: optional
+Maintainer: Richard Fuchs <dfx@dfx.at>
+Build-Depends: debhelper-compat (= 13)
+Standards-Version: 4.5.1
+Homepage: https://dfx.at/subsurface-debian/
+#Vcs-Browser: https://salsa.debian.org/debian/subsurface-dfx-repo-keyring
+#Vcs-Git: https://salsa.debian.org/debian/subsurface-dfx-repo-keyring.git
+Rules-Requires-Root: no
+
+Package: subsurface-dfx-repo-keyring
+Architecture: all
+Depends: ${misc:Depends}
+Description: GPG keyring for dfx.at subsurface repository
+ GPG keyring for dfx.at subsurface repository
