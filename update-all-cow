@@ -1,0 +1,12 @@
+#!/bin/bash
+
+set -e
+
+RELEASES='sid bullseye buster'
+ARCHS='amd64 i386'
+
+for RELEASE in $RELEASES; do
+	for ARCH in $ARCHS; do
+		sudo cowbuilder --update --basepath ~/var/cache/pbuilder/base-"$RELEASE"-"$ARCH".cow --aptcache ~/var/cache/aptcache --buildplace ~/var/cache/pbuilder/build
+	done
+done

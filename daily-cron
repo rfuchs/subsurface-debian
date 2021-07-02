@@ -1,0 +1,9 @@
+#!/bin/bash
+
+set -e
+
+test -n "$SUBSURFACE_DEBIAN_SRCDIR"
+test -d "$SUBSURFACE_DEBIAN_SRCDIR"
+
+"$SUBSURFACE_DEBIAN_SRCDIR"/update-all-cow
+"$SUBSURFACE_DEBIAN_SRCDIR"/beta/build-all
