@@ -7,7 +7,12 @@ if test -z "$VERSION"; then
 	VERSION=$(date +%Y%m%d%H%M)
 fi
 
-git clone --depth 1 --single-branch --recurse-submodules --shallow-submodules https://github.com/subsurface/subsurface.git
+git clone --single-branch --recurse-submodules --shallow-submodules https://github.com/subsurface/subsurface.git
+
+cd subsurface
+git tag --list v\* > ~/.sub.tags.$$
+cd ..
+mv -f ~/.sub.tags.$$ ~/.sub.tags.new
 
 if test -n "$THIS_BUILD_ID"; then
 	cd subsurface
