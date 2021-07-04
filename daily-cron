@@ -1,6 +1,7 @@
 #!/bin/bash
 
 set -e
+set -x
 
 test -n "$SUBSURFACE_DEBIAN_SRCDIR"
 test -d "$SUBSURFACE_DEBIAN_SRCDIR"

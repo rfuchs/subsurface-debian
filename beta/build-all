@@ -1,11 +1,12 @@
 #!/bin/bash
 
 set -e
+set -x
 
 LAST_BUILD_ID=~/.sub.last.build.id
 BUILDDIR=~/tmp
 REPO=~/htdocs/dfx.at/subsurface-debian
-RELEASES='sid,sid bullseye,deb11u1 buster,deb10u1'
+RELEASES='sid, bullseye,~bpo11+1 buster,~bpo10+1'
 ARCHS='amd64 i386'
 
 test -n "$SUBSURFACE_DEBIAN_SRCDIR"
@@ -33,17 +34,19 @@ for RELEASE in $RELEASES; do
 	IFS=, read -a REL_NAMES <<< "$RELEASE"
 	RELEASE=${REL_NAMES[0]}
 	REL_CODE=${REL_NAMES[1]}
+	FULL_VER="$VERSION"-1"$REL_CODE"
 	export RELEASE
 	export REL_CODE
+	export FULL_VER
 	mkdir "$RELEASE"
 	cd "$RELEASE"
 	"$SUBSURFACE_DEBIAN_SRCDIR"/beta/create-debian-build
 	for ARCH in $ARCHS; do
-		sudo cowbuilder --build --buildplace ~/var/cache/pbuilder/build --buildresult "$OUTPUT_DIR" --basepath ~/var/cache/pbuilder/base-"$RELEASE"-"$ARCH".cow --aptcache ~/var/cache/aptcache subsurface-beta_"$VERSION"-1+"$REL_CODE".dsc
-		reprepro -Vb "$REPO" -C main includedeb "$RELEASE" "$OUTPUT_DIR"/subsurface-beta_"$VERSION"-1+"$REL_CODE"_"$ARCH".deb
-		reprepro -Vb "$REPO" -C main includedeb "$RELEASE" "$OUTPUT_DIR"/subsurface-beta-dbgsym_"$VERSION"-1+"$REL_CODE"_"$ARCH".deb
+		sudo cowbuilder --build --buildplace ~/var/cache/pbuilder/build --buildresult "$OUTPUT_DIR" --basepath ~/var/cache/pbuilder/base-"$RELEASE"-"$ARCH".cow --aptcache ~/var/cache/aptcache subsurface-beta_"$FULL_VER".dsc
+		reprepro -Vb "$REPO" -C main includedeb "$RELEASE" "$OUTPUT_DIR"/subsurface-beta_"$FULL_VER"_"$ARCH".deb
+		reprepro -Vb "$REPO" -C main includedeb "$RELEASE" "$OUTPUT_DIR"/subsurface-beta-dbgsym_"$FULL_VER"_"$ARCH".deb
 	done
-	reprepro -Vb "$REPO" -C main includedsc "$RELEASE" "$OUTPUT_DIR"/subsurface-beta_"$VERSION"-1+"$REL_CODE".dsc
+	reprepro -Vb "$REPO" -C main includedsc "$RELEASE" "$OUTPUT_DIR"/subsurface-beta_"$FULL_VER".dsc
 	cd ..
 done
 
