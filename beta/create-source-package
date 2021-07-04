@@ -17,7 +17,7 @@ if test -n "$THIS_BUILD_ID"; then
 		LAST_ID=$(<"$LAST_BUILD_ID")
 		if test "$LAST_ID" = "$THIS_ID"; then
 			echo no new commits
-			exit 1
+			exit 42
 		fi
 	fi
 

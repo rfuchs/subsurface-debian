@@ -24,10 +24,20 @@ export VERSION=$(date +%Y%m%d%H%M)
 
 export LAST_BUILD_ID
 export THIS_BUILD_ID="$LAST_BUILD_ID.new"
-if ! "$SUBSURFACE_DEBIAN_SRCDIR"/beta/create-source-package; then
+
+set +e
+"$SUBSURFACE_DEBIAN_SRCDIR"/beta/create-source-package
+CODE=$?
+set -e
+
+if test "$CODE" -ne 0; then
 	cd ..
 	rm -rf build.$$
-	exit
+	rm -rf "$OUTPUT_DIR"
+	if test "$CODE" -eq 42; then
+		exit 0
+	fi
+	exit "$CODE"
 fi
 
 for RELEASE in $RELEASES; do
