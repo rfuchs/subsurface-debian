@@ -1,0 +1,20 @@
+#!/bin/bash
+
+set -e
+
+NEW_FILE=~/.sub.tags.new
+CUR_FILE=~/.sub.tags.cur
+
+test -f "$NEW_FILE" || exit 0
+
+if ! test -f "$CUR_FILE"; then
+	cp -a "$NEW_FILE" "$CUR_FILE"
+	exit 0
+fi
+
+if diff -q "$NEW_FILE" "$CUR_FILE"; then
+	exit 0
+fi
+
+diff -u "$CUR_FILE" "$NEW_FILE" || true
+cp -a "$NEW_FILE" "$CUR_FILE"
