@@ -13,7 +13,7 @@ Build-Depends: asciidoc,
                libbluetooth-dev,
                libcurl4-openssl-dev,
                libgconf2-dev,
-	       libgit2-dev,
+               libgit2-dev,
                libmtp-dev,
                libqt5svg5-dev,
                libqt5webkit5-dev,
@@ -29,7 +29,7 @@ Build-Depends: asciidoc,
                pkg-config,
                qml-module-qtlocation,
                qml-module-qtpositioning,
-	       qml-module-qtquick2,
+               qml-module-qtquick2,
                qt5-qmake,
                qtconnectivity5-dev,
                qtlocation5-dev,
@@ -38,13 +38,17 @@ Build-Depends: asciidoc,
                qttools5-dev,
                qttools5-dev-tools,
                txt2html,
-	       zlib1g-dev,
+               zlib1g-dev
 Standards-Version: 4.5.1
 Homepage: http://subsurface-divelog.org
 
 Package: subsurface
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, qml-module-qtlocation, qml-module-qtpositioning, qml-module-qtquick2
+Depends: qml-module-qtlocation,
+         qml-module-qtpositioning,
+         qml-module-qtquick2,
+         ${misc:Depends},
+         ${shlibs:Depends}
 Description: Dive log program
  Subsurface is an open source divelog program that runs on Windows, Mac and Linux.
  Subsurface is able to track single- and multi-tank dives using air, Nitrox or

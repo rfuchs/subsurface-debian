@@ -3,9 +3,9 @@
 set -e
 
 test -n "$RELEASE"
-test -n "$REL_CODE"
 test -n "$SUBSURFACE_DEBIAN_SRCDIR"
 test -n "$VERSION"
+test -n "$FULL_VER"
 test -n "$BRANCH"
 
 test -f ../subsurface_"$VERSION".orig.tar.gz
@@ -18,7 +18,7 @@ cd subsurface-"$VERSION"
 if test -f debian/changelog; then
 	exit 1
 else
-	dch -v "$VERSION"-1+"$REL_CODE" --create -D "$RELEASE" --package subsurface "Release $VERSION"
+	dch -v "$FULL_VER" --create -D "$RELEASE" --package subsurface "Release $VERSION"
 	cp -va debian/changelog "$GITDIR"/"$RELEASE"/debian
 fi
 cd ..

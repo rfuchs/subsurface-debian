@@ -2,7 +2,7 @@
 
 set -e
 
-RELEASES='sid bullseye buster'
+RELEASES='sid bullseye buster bookworm'
 ARCHS='amd64 i386'
 
 for RELEASE in $RELEASES; do
