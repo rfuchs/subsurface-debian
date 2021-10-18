@@ -1,0 +1,5 @@
+subsurface (5.0.3-1~bpo12+1) bookworm; urgency=medium
+
+  * Release 5.0.3
+
+ -- Richard Fuchs <dfx@dfx.at>  Tue, 24 Aug 2021 04:20:22 +0200
