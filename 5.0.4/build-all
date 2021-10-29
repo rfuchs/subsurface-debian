@@ -36,11 +36,14 @@ if ! "$GITDIR"/create-source-package; then
 	exit
 fi
 
+BUILDNUM=${BUILDNUM:-1}
+BUILDCODE="-$BUILDNUM"
+
 for RELEASE in $RELEASES; do
 	IFS=, read -a REL_NAMES <<< "$RELEASE"
 	RELEASE=${REL_NAMES[0]}
 	REL_CODE=${REL_NAMES[1]}
-	FULL_VER="$VERSION"-1"$REL_CODE"
+	FULL_VER="$VERSION$BUILDCODE$REL_CODE"
 	export RELEASE
 	export REL_CODE
 	export FULL_VER

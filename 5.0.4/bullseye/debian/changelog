@@ -1,5 +1,5 @@
-subsurface (5.0.4-1~bpo11+1) bullseye; urgency=medium
+subsurface (5.0.4-3~bpo11+1) bullseye; urgency=medium
 
   * Release 5.0.4
 
- -- Richard Fuchs <dfx@dfx.at>  Mon, 18 Oct 2021 14:57:28 +0200
+ -- Richard Fuchs <dfx@dfx.at>  Fri, 29 Oct 2021 21:53:46 +0200
