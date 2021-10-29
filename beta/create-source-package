@@ -32,6 +32,7 @@ fi
 
 git clone --depth 1 --single-branch --recurse-submodules --shallow-submodules https://github.com/subsurface/googlemaps.git
 git clone --depth 1 --single-branch --recurse-submodules --shallow-submodules https://github.com/qt/qtlocation.git
+git clone --depth 1 --single-branch --recurse-submodules --shallow-submodules https://github.com/qt/qtpositioning.git
 
 test ! -e subsurface-beta-"$VERSION"
 mkdir subsurface-beta-"$VERSION"
@@ -39,7 +40,8 @@ mkdir subsurface-beta-"$VERSION"
 cp -va subsurface/. subsurface-beta-"$VERSION"
 cp -va googlemaps subsurface-beta-"$VERSION"/googlemaps
 cp -va qtlocation subsurface-beta-"$VERSION"/qtlocation
+cp -va qtpositioning subsurface-beta-"$VERSION"/qtpositioning
 tar -czf subsurface-beta_"$VERSION".orig.tar.gz subsurface-beta-"$VERSION"
-rm -rf subsurface googlemaps qtlocation
+rm -rf subsurface googlemaps qtlocation qtpositioning
 
 echo export VERSION="$VERSION"

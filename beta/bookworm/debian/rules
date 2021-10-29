@@ -44,7 +44,7 @@ override_dh_auto_configure:
 	mkdir -p install-root
 	(mkdir -p $(MY_INSTALL_ROOT)/include/QtLocation/private; mkdir -p $(MY_INSTALL_ROOT)/include/QtPositioning/private; \
 		find qtlocation/src/location -name '*_p.h' -print0 | xargs -0 cp -vt $(MY_INSTALL_ROOT)/include/QtLocation/private; \
-		find qtlocation/src/positioning -name '*_p.h' -print0 | xargs -0 cp -vt $(MY_INSTALL_ROOT)/include/QtPositioning/private)
+		find qtpositioning/src/positioning -name '*_p.h' -print0 | xargs -0 cp -vt $(MY_INSTALL_ROOT)/include/QtPositioning/private)
 	(mkdir -p googlemaps/build ; cd googlemaps/build ; \
 		qmake "INCLUDEPATH=../../QtHeaders/$(QTVERSION)/include $(MY_INSTALL_ROOT)/include" ../googlemaps.pro ; \
 		rm -rf $(QTLOC_GIT) > /dev/null 2>&1 ; \
