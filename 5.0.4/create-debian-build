@@ -18,7 +18,7 @@ cd subsurface-"$VERSION"
 if test -f debian/changelog; then
 	exit 1
 else
-	dch -v "$FULL_VER" --create -D "$RELEASE" --package subsurface "Release $VERSION"
+	dch -v "$FULL_VER" --create -D "$RELEASE" --force-distribution --package subsurface "Release $VERSION"
 	cp -va debian/changelog "$GITDIR"/"$RELEASE"/debian
 fi
 cd ..

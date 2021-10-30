@@ -17,6 +17,6 @@ test -d "$SUBSURFACE_DEBIAN_SRCDIR"/"$BRANCH"/"$RELEASE"/debian
 cp -va ../subsurface-beta_"$VERSION".orig.tar.gz ../subsurface-beta-"$VERSION" .
 cp -va "$SUBSURFACE_DEBIAN_SRCDIR"/"$BRANCH"/"$RELEASE"/debian subsurface-beta-"$VERSION"
 cd subsurface-beta-"$VERSION"
-dch -v "$FULL_VER" --create -D "$RELEASE" --package subsurface-beta "Beta build"
+dch -v "$FULL_VER" --create -D "$RELEASE" --force-distribution --package subsurface-beta "Beta build"
 cd ..
 dpkg-source -b subsurface-beta-"$VERSION"
