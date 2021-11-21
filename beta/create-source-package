@@ -32,7 +32,11 @@ fi
 
 git clone --depth 1 --single-branch --recurse-submodules --shallow-submodules https://github.com/subsurface/googlemaps.git
 git clone --depth 1 --single-branch --recurse-submodules --shallow-submodules https://github.com/qt/qtlocation.git
-git clone --depth 1 --single-branch --recurse-submodules --shallow-submodules https://github.com/qt/qtpositioning.git
+#git clone --depth 1 --single-branch --recurse-submodules --shallow-submodules https://github.com/qt/qtpositioning.git
+git clone --single-branch --recurse-submodules --shallow-submodules https://github.com/qt/qtpositioning.git
+pushd qtpositioning
+git checkout cfa650683e
+popd
 
 test ! -e subsurface-beta-"$VERSION"
 mkdir subsurface-beta-"$VERSION"
