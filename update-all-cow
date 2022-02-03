@@ -7,6 +7,7 @@ ARCHS='amd64 i386'
 
 for RELEASE in $RELEASES; do
 	for ARCH in $ARCHS; do
+		# sudo cowbuilder --create --basepath ~/var/cache/pbuilder/base-bookworm-i386.cow --distribution bookworm --architecture i386 --aptcache ~/var/cache/aptcache
 		sudo cowbuilder --update --basepath ~/var/cache/pbuilder/base-"$RELEASE"-"$ARCH".cow --aptcache ~/var/cache/aptcache --buildplace ~/var/cache/pbuilder/build
 	done
 done
