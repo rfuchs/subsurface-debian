@@ -1,0 +1,25 @@
+#!/bin/bash
+
+set -e
+
+test -n "$VERSION"
+test -n "$BRANCH"
+
+git clone --depth 1 --single-branch --recurse-submodules --shallow-submodules --branch "$BRANCH" https://github.com/subsurface/subsurface.git
+git clone --depth 1 --single-branch --recurse-submodules --shallow-submodules https://github.com/subsurface/googlemaps.git
+git clone --depth 1 --single-branch --recurse-submodules --shallow-submodules https://github.com/qt/qtlocation.git
+#git clone --depth 1 --single-branch --recurse-submodules --shallow-submodules https://github.com/qt/qtpositioning.git
+git clone --single-branch --recurse-submodules --shallow-submodules https://github.com/qt/qtpositioning.git
+pushd qtpositioning
+git checkout cfa650683e
+popd
+
+test ! -e subsurface-"$VERSION"
+mkdir subsurface-"$VERSION"
+
+cp -va subsurface/. subsurface-"$VERSION"
+cp -va googlemaps subsurface-"$VERSION"/googlemaps
+cp -va qtlocation subsurface-"$VERSION"/qtlocation
+cp -va qtpositioning subsurface-"$VERSION"/qtpositioning
+tar -czf subsurface_"$VERSION".orig.tar.gz subsurface-"$VERSION"
+rm -rf subsurface googlemaps qtlocation qtpositioning
