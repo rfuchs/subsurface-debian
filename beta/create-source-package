@@ -31,7 +31,13 @@ if test -n "$THIS_BUILD_ID"; then
 fi
 
 git clone --depth 1 --single-branch --recurse-submodules --shallow-submodules https://github.com/subsurface/googlemaps.git
-git clone --depth 1 --single-branch --recurse-submodules --shallow-submodules https://github.com/qt/qtlocation.git
+
+#git clone --depth 1 --single-branch --recurse-submodules --shallow-submodules https://github.com/qt/qtlocation.git
+git clone --single-branch --recurse-submodules --shallow-submodules https://github.com/qt/qtlocation.git
+pushd qtlocation
+git checkout 4b42b88f6b
+popd
+
 #git clone --depth 1 --single-branch --recurse-submodules --shallow-submodules https://github.com/qt/qtpositioning.git
 git clone --single-branch --recurse-submodules --shallow-submodules https://github.com/qt/qtpositioning.git
 pushd qtpositioning
