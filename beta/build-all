@@ -3,9 +3,11 @@
 set -e
 set -x
 
+declare -a errors
+
 LAST_BUILD_ID=~/.sub.last.build.id
 BUILDDIR=~/tmp
-REPO=~/htdocs/dfx.at/subsurface-debian
+REPO=~/htdocs/dfx.at/subsurface
 RELEASES='sid, bookworm,~bpo12+1 bullseye,~bpo11+1 buster,~bpo10+1'
 ARCHS='amd64 i386'
 
@@ -52,9 +54,24 @@ for RELEASE in $RELEASES; do
 	cd "$RELEASE"
 	"$SUBSURFACE_DEBIAN_SRCDIR"/beta/create-debian-build
 	for ARCH in $ARCHS; do
-		sudo cowbuilder --build --buildplace ~/var/cache/pbuilder/build --buildresult "$OUTPUT_DIR" --basepath ~/var/cache/pbuilder/base-"$RELEASE"-"$ARCH".cow --aptcache ~/var/cache/aptcache subsurface-beta_"$FULL_VER".dsc
-		reprepro -Vb "$REPO" -C main includedeb "$RELEASE" "$OUTPUT_DIR"/subsurface-beta_"$FULL_VER"_"$ARCH".deb
-		reprepro -Vb "$REPO" -C main includedeb "$RELEASE" "$OUTPUT_DIR"/subsurface-beta-dbgsym_"$FULL_VER"_"$ARCH".deb
+		echo building subsurface-beta_"$FULL_VER".dsc for "$RELEASE"-"$ARCH"
+		set +e
+		LOGFILE=build.log.$$."$RELEASE"-"$ARCH"
+		sudo pbuilder build --buildplace ~/var/build --buildresult "$OUTPUT_DIR" --basetgz ~/var/cache/pbuilder/base-"$RELEASE"-"$ARCH".tgz --aptcache ~/var/cache/aptcache subsurface-beta_"$FULL_VER".dsc
+		CODE=$?
+		set -e
+
+		if test "$CODE" -eq 0; then
+			echo build successful
+			rm -f "$LOGFILE"
+			reprepro -Vb "$REPO" -C main includedeb "$RELEASE" "$OUTPUT_DIR"/subsurface-beta_"$FULL_VER"_"$ARCH".deb
+			reprepro -Vb "$REPO" -C main includedeb "$RELEASE" "$OUTPUT_DIR"/subsurface-beta-dbgsym_"$FULL_VER"_"$ARCH".deb
+		else
+			echo build failed
+			echo build log: "$LOGFILE"
+			mv "$LOGFILE" ~/
+			errors+=("build failed: $LOGFILE")
+		fi
 	done
 	debsign "$OUTPUT_DIR"/subsurface-beta_"$FULL_VER".dsc
 	reprepro -Vb "$REPO" -C main includedsc "$RELEASE" "$OUTPUT_DIR"/subsurface-beta_"$FULL_VER".dsc
@@ -66,3 +83,11 @@ rm -rf build.$$
 rm -rf "$OUTPUT_DIR"
 
 mv -f "$THIS_BUILD_ID" "$LAST_BUILD_ID"
+
+if test ${#errors[@]} -gt 0; then
+	echo errors:
+	echo "${errors[@]}"
+	exit 1
+fi
+
+exit 0
