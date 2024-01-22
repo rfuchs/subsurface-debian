@@ -1,5 +1,5 @@
-subsurface (5.0.10-1~bpo12+1) bookworm; urgency=medium
+subsurface (5.0.10-5~bpo12+1) bookworm; urgency=medium
 
   * Release 5.0.10
 
- -- Richard Fuchs <dfx@dfx.at>  Wed, 05 Oct 2022 00:30:45 +0200
+ -- Richard Fuchs <dfx@dfx.at>  Wed, 05 Jul 2023 18:44:49 -0400

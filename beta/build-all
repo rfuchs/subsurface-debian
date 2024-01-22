@@ -9,8 +9,8 @@ LAST_BUILD_ID=~/.sub.last.build.id
 BUILDDIR=~/tmp
 REPO=~/htdocs/dfx.at/subsurface
 RELEASES='trixie,~bpo13+1 sid, bookworm,~bpo12+1 bullseye,~bpo11+1 buster,~bpo10+1'
-#ARCHS='amd64 i386'
-ARCHS=amd64
+ARCHS='amd64 i386'
+#ARCHS=amd64
 
 test -n "$SUBSURFACE_DEBIAN_SRCDIR"
 
