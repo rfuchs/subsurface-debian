@@ -67,6 +67,9 @@ for RELEASE in $RELEASES; do
 			rm -f "$LOGFILE"
 			reprepro -Vb "$REPO" -C main includedeb "$RELEASE" "$OUTPUT_DIR"/subsurface-beta_"$FULL_VER"_"$ARCH".deb
 			reprepro -Vb "$REPO" -C main includedeb "$RELEASE" "$OUTPUT_DIR"/subsurface-beta-dbgsym_"$FULL_VER"_"$ARCH".deb
+			test -f "$OUTPUT_DIR"/subsurface-beta-common_"$FULL_VER"_"$ARCH".deb && reprepro -Vb "$REPO" -C main includedeb "$RELEASE" "$OUTPUT_DIR"/subsurface-beta-common_"$FULL_VER"_"$ARCH".deb
+			test -f "$OUTPUT_DIR"/subsurface-beta-downloader_"$FULL_VER"_"$ARCH".deb && reprepro -Vb "$REPO" -C main includedeb "$RELEASE" "$OUTPUT_DIR"/subsurface-beta-downloader_"$FULL_VER"_"$ARCH".deb
+			test -f "$OUTPUT_DIR"/subsurface-beta-downloader-dbgsym_"$FULL_VER"_"$ARCH".deb && reprepro -Vb "$REPO" -C main includedeb "$RELEASE" "$OUTPUT_DIR"/subsurface-beta-downloader-dbgsym_"$FULL_VER"_"$ARCH".deb
 		else
 			echo build failed
 			echo build log: "$LOGFILE"
