@@ -1,0 +1,107 @@
+#!/bin/bash
+
+set -e
+set -x
+
+declare -a errors
+
+VER_STUB=6.0.0
+LAST_BUILD_ID=~/.sub.last.current.build.id
+BUILDDIR=~/tmp
+REPO=~/htdocs/dfx.at/subsurface
+RELEASES='trixie,~bpo13+1 sid, bookworm,~bpo12+1 bullseye,~bpo11+1'
+ARCHS='amd64 i386'
+
+test -n "$SUBSURFACE_DEBIAN_SRCDIR"
+
+cd "$BUILDDIR"
+mkdir build.$$
+
+OUTPUT_DIR="$BUILDDIR/artefacts.$$"
+mkdir artefacts.$$
+test -d "$OUTPUT_DIR"
+
+cd build.$$
+
+export VERSION="$VER_STUB".$(date +%Y%m%d%H%M)
+
+export LAST_BUILD_ID
+export THIS_BUILD_ID="$LAST_BUILD_ID.new"
+
+set +e
+"$SUBSURFACE_DEBIAN_SRCDIR"/current/create-source-package
+CODE=$?
+set -e
+
+if test "$CODE" -ne 0; then
+	cd ..
+	rm -rf build.$$
+	rm -rf "$OUTPUT_DIR"
+	if test "$CODE" -eq 42; then
+		exit 0
+	fi
+	exit "$CODE"
+fi
+
+COMMIT=$(<"$THIS_BUILD_ID")
+COMMIT_SHORT=${COMMIT:0:8}
+VERSION="$VERSION"~"$COMMIT_SHORT"
+
+for RELEASE in $RELEASES; do
+	IFS=, read -a REL_NAMES <<< "$RELEASE"
+	RELEASE=${REL_NAMES[0]}
+	REL_CODE=${REL_NAMES[1]}
+	FULL_VER="$VERSION"-1"$REL_CODE"
+	export RELEASE
+	export REL_CODE
+	export FULL_VER
+	mkdir "$RELEASE"
+	cd "$RELEASE"
+	"$SUBSURFACE_DEBIAN_SRCDIR"/current/create-debian-build
+	for ARCH in $ARCHS; do
+		echo building subsurface_"$FULL_VER".dsc for "$RELEASE"-"$ARCH"
+		set +e
+		LOGFILE=build.log.$$."$RELEASE"-"$ARCH"
+		sudo pbuilder build --buildplace ~/var/build --buildresult "$OUTPUT_DIR" --basetgz ~/var/cache/pbuilder/base-"$RELEASE"-"$ARCH".tgz --aptcache ~/var/cache/aptcache subsurface_"$FULL_VER".dsc > "$LOGFILE" 2>&1
+		CODE=$?
+		set -e
+
+		if test "$CODE" -eq 0; then
+			echo build successful
+			rm -f "$LOGFILE"
+			reprepro -Vb "$REPO" -C main includedeb "$RELEASE" "$OUTPUT_DIR"/subsurface_"$FULL_VER"_"$ARCH".deb
+			reprepro -Vb "$REPO" -C main includedeb "$RELEASE" "$OUTPUT_DIR"/subsurface-dbgsym_"$FULL_VER"_"$ARCH".deb
+			test -f "$OUTPUT_DIR"/subsurface-common_"$FULL_VER"_"$ARCH".deb && reprepro -Vb "$REPO" -C main includedeb "$RELEASE" "$OUTPUT_DIR"/subsurface-common_"$FULL_VER"_"$ARCH".deb
+			test -f "$OUTPUT_DIR"/subsurface-downloader_"$FULL_VER"_"$ARCH".deb && reprepro -Vb "$REPO" -C main includedeb "$RELEASE" "$OUTPUT_DIR"/subsurface-downloader_"$FULL_VER"_"$ARCH".deb
+			test -f "$OUTPUT_DIR"/subsurface-downloader-dbgsym_"$FULL_VER"_"$ARCH".deb && reprepro -Vb "$REPO" -C main includedeb "$RELEASE" "$OUTPUT_DIR"/subsurface-downloader-dbgsym_"$FULL_VER"_"$ARCH".deb
+		else
+			echo build failed
+			echo build log: "$LOGFILE"
+			mv "$LOGFILE" ~/
+			errors+=("build failed: $LOGFILE")
+		fi
+	done
+	debsign "$OUTPUT_DIR"/subsurface_"$FULL_VER".dsc
+	reprepro -Vb "$REPO" -C main includedsc "$RELEASE" "$OUTPUT_DIR"/subsurface_"$FULL_VER".dsc
+
+	if test -d ~/var/arm-queue; then
+		echo https://subsurface.dfx.at/pool/main/s/subsurface/subsurface_"$FULL_VER".dsc > ~/var/arm-queue/.subsurface."$RELEASE".$$ || true
+		mv ~/var/arm-queue/.subsurface."$RELEASE".$$ ~/var/arm-queue/subsurface."$RELEASE" || true
+		:
+	fi
+	cd ..
+done
+
+cd ..
+rm -rf build.$$
+rm -rf "$OUTPUT_DIR"
+
+mv -f "$THIS_BUILD_ID" "$LAST_BUILD_ID"
+
+if test ${#errors[@]} -gt 0; then
+	echo errors:
+	echo "${errors[@]}"
+	exit 1
+fi
+
+exit 0

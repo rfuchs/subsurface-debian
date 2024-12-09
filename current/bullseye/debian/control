@@ -1,0 +1,87 @@
+Source: subsurface
+Section: utils
+Priority: optional
+Maintainer: Richard Fuchs <dfx@dfx.at>
+Build-Depends: asciidoc,
+               autoconf,
+               automake,
+               cmake,
+               debhelper (>= 13),
+               dh-autoreconf,
+               dpkg-dev (>= 1.16.1.1),
+               git,
+               libbluetooth-dev,
+               libcurl4-openssl-dev,
+               libgconf2-dev,
+               libgit2-dev,
+               libmtp-dev,
+               libqt5svg5-dev,
+               libqt5webkit5-dev,
+               libsoup2.4-dev,
+               libsqlite3-dev,
+               libssh2-1-dev,
+               libssl-dev,
+               libtool,
+               libusb-1.0-0-dev,
+               libxml2-dev,
+               libxslt1-dev,
+               libzip-dev,
+               pkg-config,
+               qml-module-qtlocation,
+               qml-module-qtpositioning,
+               qml-module-qtquick2,
+               qt5-qmake,
+               qtconnectivity5-dev,
+               qtlocation5-dev,
+               qtpositioning5-dev,
+               qtscript5-dev,
+               qttools5-dev,
+               qttools5-dev-tools,
+               txt2html,
+               zlib1g-dev
+Standards-Version: 4.5.1
+Homepage: http://subsurface-divelog.org
+
+Package: subsurface
+Architecture: any
+Depends: qml-module-qtlocation,
+         qml-module-qtpositioning,
+         qml-module-qtquick2,
+         subsurface-common (= ${source:Version}),
+         ${misc:Depends},
+         ${shlibs:Depends}
+Conflicts: subsurface
+Description: Dive log program
+ Subsurface is an open source divelog program that runs on Windows, Mac and Linux.
+ Subsurface is able to track single- and multi-tank dives using air, Nitrox or
+ TriMix. It also allows logging of weights and exposure protection used, dive
+ masters and dive buddies and enables the user to rate dives and provide
+ additional dive notes.
+
+Package: subsurface-downloader
+Architecture: any
+Depends: libcgi-pm-perl,
+         libgit-repository-perl,
+         subsurface-common (= ${source:Version}),
+         ${misc:Depends},
+         ${shlibs:Depends}
+Conflicts: subsurface-downloader
+Description: Dive log program - headless downloader
+ Subsurface is an open source divelog program that runs on Windows, Mac and Linux.
+ Subsurface is able to track single- and multi-tank dives using air, Nitrox or
+ TriMix. It also allows logging of weights and exposure protection used, dive
+ masters and dive buddies and enables the user to rate dives and provide
+ additional dive notes.
+
+Package: subsurface-common
+Architecture: any
+Depends: ${misc:Depends}, ${shlibs:Depends}
+Conflicts: subsurface-common
+Replaces: subsurface (<< 202401230000)
+Breaks: subsurface (<< 202401230000)
+Description: Dive log program - common files
+ Subsurface is an open source divelog program that runs on Windows, Mac and Linux.
+ Subsurface is able to track single- and multi-tank dives using air, Nitrox or
+ TriMix. It also allows logging of weights and exposure protection used, dive
+ masters and dive buddies and enables the user to rate dives and provide
+ additional dive notes.

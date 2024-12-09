@@ -1,0 +1,22 @@
+#!/bin/bash
+
+set -e
+set -x
+
+test -n "$RELEASE"
+test -n "$SUBSURFACE_DEBIAN_SRCDIR"
+test -n "$VERSION" # VERSION=$(date +%Y%m%d%H%H)
+test -n "$FULL_VER"
+
+BRANCH=current
+
+test -f ../subsurface_"$VERSION".orig.tar.gz
+test -d ../subsurface-"$VERSION"
+test -d "$SUBSURFACE_DEBIAN_SRCDIR"/"$BRANCH"/"$RELEASE"/debian
+
+cp -va ../subsurface_"$VERSION".orig.tar.gz ../subsurface-"$VERSION" .
+cp -va "$SUBSURFACE_DEBIAN_SRCDIR"/"$BRANCH"/"$RELEASE"/debian subsurface-"$VERSION"
+cd subsurface-"$VERSION"
+dch -v "$FULL_VER" --create -D "$RELEASE" --force-distribution --package subsurface "Current build"
+cd ..
+dpkg-source -b subsurface-"$VERSION"

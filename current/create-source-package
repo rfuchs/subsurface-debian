@@ -1,0 +1,64 @@
+#!/bin/bash
+
+set -e
+set -x
+
+if test -z "$VERSION"; then
+	VERSION=$(date +%Y%m%d%H%M)
+fi
+
+git clone --branch current --single-branch --recurse-submodules --shallow-submodules https://github.com/subsurface/subsurface.git
+
+if test -n "$THIS_BUILD_ID"; then
+	cd subsurface
+
+	THIS_ID=$(git rev-parse HEAD)
+	if test -n "$LAST_BUILD_ID" -a -f "$LAST_BUILD_ID"; then
+		LAST_ID=$(<"$LAST_BUILD_ID")
+		if test "$LAST_ID" = "$THIS_ID"; then
+			echo no new commits
+			exit 42
+		fi
+	fi
+
+	echo "$THIS_ID" > "$THIS_BUILD_ID"
+	cd ..
+fi
+
+COMMIT=$(<"$THIS_BUILD_ID")
+COMMIT_SHORT=${COMMIT:0:8}
+VERSION="$VERSION"~"$COMMIT_SHORT"
+
+git clone --depth 1 --single-branch --recurse-submodules --shallow-submodules https://github.com/subsurface/googlemaps.git
+rm -rf googlemaps/.git
+
+#git clone --depth 1 --single-branch --recurse-submodules --shallow-submodules https://github.com/qt/qtlocation.git
+git clone --single-branch --recurse-submodules --shallow-submodules https://github.com/qt/qtlocation.git
+pushd qtlocation
+git checkout 4b42b88f6b
+rm -rf .git
+popd
+
+#git clone --depth 1 --single-branch --recurse-submodules --shallow-submodules https://github.com/qt/qtpositioning.git
+git clone --single-branch --recurse-submodules --shallow-submodules https://github.com/qt/qtpositioning.git
+pushd qtpositioning
+git checkout cfa650683e
+rm -rf .git
+popd
+
+test ! -e subsurface-"$VERSION"
+mkdir subsurface-"$VERSION"
+
+rm -rf subsurface/.github
+rm -rf subsurface/.git
+rm -rf subsurface/libdivecomputer/.github
+rm -rf subsurface/libdivecomputer/.git
+
+cp -va subsurface/. subsurface-"$VERSION"
+cp -va googlemaps subsurface-"$VERSION"/googlemaps
+cp -va qtlocation subsurface-"$VERSION"/qtlocation
+cp -va qtpositioning subsurface-"$VERSION"/qtpositioning
+tar -czf subsurface_"$VERSION".orig.tar.gz subsurface-"$VERSION"
+rm -rf subsurface googlemaps qtlocation qtpositioning
+
+echo export VERSION="$VERSION"

@@ -58,7 +58,7 @@ for RELEASE in $RELEASES; do
 		echo building subsurface-beta_"$FULL_VER".dsc for "$RELEASE"-"$ARCH"
 		set +e
 		LOGFILE=build.log.$$."$RELEASE"-"$ARCH"
-		sudo pbuilder build --buildplace ~/var/build --buildresult "$OUTPUT_DIR" --basetgz ~/var/cache/pbuilder/base-"$RELEASE"-"$ARCH".tgz --aptcache ~/var/cache/aptcache subsurface-beta_"$FULL_VER".dsc
+		sudo pbuilder build --buildplace ~/var/build --buildresult "$OUTPUT_DIR" --basetgz ~/var/cache/pbuilder/base-"$RELEASE"-"$ARCH".tgz --aptcache ~/var/cache/aptcache subsurface-beta_"$FULL_VER".dsc > "$LOGFILE" 2>&1
 		CODE=$?
 		set -e
 
