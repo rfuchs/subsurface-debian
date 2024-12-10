@@ -29,7 +29,7 @@ export LAST_BUILD_ID
 export THIS_BUILD_ID="$LAST_BUILD_ID.new"
 
 set +e
-"$SUBSURFACE_DEBIAN_SRCDIR"/current/create-source-package
+. "$SUBSURFACE_DEBIAN_SRCDIR"/current/create-source-package
 CODE=$?
 set -e
 
@@ -43,9 +43,9 @@ if test "$CODE" -ne 0; then
 	exit "$CODE"
 fi
 
-COMMIT=$(<"$THIS_BUILD_ID")
-COMMIT_SHORT=${COMMIT:0:8}
-VERSION="$VERSION"~"$COMMIT_SHORT"
+#COMMIT=$(<"$THIS_BUILD_ID")
+#COMMIT_SHORT=${COMMIT:0:8}
+#VERSION="$VERSION"~"$COMMIT_SHORT"
 
 for RELEASE in $RELEASES; do
 	IFS=, read -a REL_NAMES <<< "$RELEASE"

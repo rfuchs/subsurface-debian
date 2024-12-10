@@ -26,6 +26,17 @@ if test -n "$THIS_BUILD_ID"; then
 fi
 
 COMMIT=$(<"$THIS_BUILD_ID")
+
+rm -rf nightly-builds
+git clone https://github.com/subsurface/nightly-builds.git
+pushd nightly-builds
+if git checkout branch-for-"$COMMIT"; then
+	CI_VER=$(<latest-subsurface-buildnumber)
+	VERSION="$VERSION"."$CI_VER"
+fi
+popd
+rm -rf nightly-builds
+
 COMMIT_SHORT=${COMMIT:0:8}
 VERSION="$VERSION"~"$COMMIT_SHORT"
 
