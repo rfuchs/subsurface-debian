@@ -23,8 +23,6 @@ test -d "$OUTPUT_DIR"
 
 cd build.$$
 
-export VERSION="$VER_STUB".$(date +%Y%m%d%H%M)
-
 export LAST_BUILD_ID
 export THIS_BUILD_ID="$LAST_BUILD_ID.new"
 
@@ -32,6 +30,9 @@ set +e
 . "$SUBSURFACE_DEBIAN_SRCDIR"/current/create-source-package
 CODE=$?
 set -e
+
+export VERSION
+export CANONICALVERSION=$VERSION
 
 if test "$CODE" -ne 0; then
 	cd ..
