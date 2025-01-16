@@ -26,6 +26,7 @@ COMMIT=$(<"$THIS_BUILD_ID")
 pushd subsurface
 echo dfx > latest-subsurface-buildnumber-extension
 VERSION=$(./scripts/get-version.sh)
+VERSION_4=$(./scripts/get-version.sh 4)
 rm -f latest-subsurface-buildnumber-extension
 popd
 

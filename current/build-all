@@ -32,7 +32,11 @@ CODE=$?
 set -e
 
 export VERSION
+export VERSION_4
 export CANONICALVERSION=$VERSION
+export CANONICALVERSION_4=$VERSION_4
+export CANONICAL_VERSION_STRING=$VERSION
+export CANONICAL_VERSION_STRING_4=$VERSION_4
 
 if test "$CODE" -ne 0; then
 	cd ..
@@ -63,7 +67,7 @@ for RELEASE in $RELEASES; do
 		echo building subsurface_"$FULL_VER".dsc for "$RELEASE"-"$ARCH"
 		set +e
 		LOGFILE=build.log.$$."$RELEASE"-"$ARCH"
-		sudo pbuilder build --buildplace ~/var/build --buildresult "$OUTPUT_DIR" --basetgz ~/var/cache/pbuilder/base-"$RELEASE"-"$ARCH".tgz --aptcache ~/var/cache/aptcache subsurface_"$FULL_VER".dsc > "$LOGFILE" 2>&1
+		sudo -E pbuilder build --buildplace ~/var/build --buildresult "$OUTPUT_DIR" --basetgz ~/var/cache/pbuilder/base-"$RELEASE"-"$ARCH".tgz --aptcache ~/var/cache/aptcache subsurface_"$FULL_VER".dsc > "$LOGFILE" 2>&1
 		CODE=$?
 		set -e
 
