@@ -9,13 +9,13 @@ fi
 
 git clone --single-branch --recurse-submodules --shallow-submodules https://github.com/subsurface/subsurface.git
 
-cd subsurface
+pushd subsurface
 git tag --list v\* > ~/.sub.tags.$$
-cd ..
+popd
 mv -f ~/.sub.tags.$$ ~/.sub.tags.new
 
 if test -n "$THIS_BUILD_ID"; then
-	cd subsurface
+	pushd subsurface
 
 	THIS_ID=$(git rev-parse HEAD)
 	if test -n "$LAST_BUILD_ID" -a -f "$LAST_BUILD_ID"; then
@@ -27,7 +27,7 @@ if test -n "$THIS_BUILD_ID"; then
 	fi
 
 	echo "$THIS_ID" > "$THIS_BUILD_ID"
-	cd ..
+	popd
 fi
 
 git clone --depth 1 --single-branch --recurse-submodules --shallow-submodules https://github.com/subsurface/googlemaps.git
@@ -47,6 +47,9 @@ git checkout cfa650683e
 rm -rf .git
 popd
 
+git clone https://github.com/cschramm/irda.git
+test -d irda
+
 test ! -e subsurface-beta-"$VERSION"
 mkdir subsurface-beta-"$VERSION"
 
@@ -54,12 +57,16 @@ rm -rf subsurface/.github
 rm -rf subsurface/.git
 rm -rf subsurface/libdivecomputer/.github
 rm -rf subsurface/libdivecomputer/.git
+rm -rf qtlocation/.git
+rm -rf qtpositioning/.git
+rm -rf irda/.git
 
 cp -va subsurface/. subsurface-beta-"$VERSION"
 cp -va googlemaps subsurface-beta-"$VERSION"/googlemaps
 cp -va qtlocation subsurface-beta-"$VERSION"/qtlocation
 cp -va qtpositioning subsurface-beta-"$VERSION"/qtpositioning
+cp -va irda subsurface-beta-"$VERSION"/irda
 tar -czf subsurface-beta_"$VERSION".orig.tar.gz subsurface-beta-"$VERSION"
-rm -rf subsurface googlemaps qtlocation qtpositioning
+rm -rf subsurface googlemaps qtlocation qtpositioning irda
 
 echo export VERSION="$VERSION"
