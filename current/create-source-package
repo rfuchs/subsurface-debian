@@ -50,6 +50,9 @@ git checkout cfa650683e
 rm -rf .git
 popd
 
+git clone https://github.com/cschramm/irda.git
+test -d irda
+
 test ! -e subsurface-"$VERSION"
 mkdir subsurface-"$VERSION"
 
@@ -57,12 +60,16 @@ rm -rf subsurface/.github
 rm -rf subsurface/.git
 rm -rf subsurface/libdivecomputer/.github
 rm -rf subsurface/libdivecomputer/.git
-
+rm -rf qtlocation/.git
+rm -rf qtpositioning/.git
+rm -rf irda/.git
+ 
 cp -va subsurface/. subsurface-"$VERSION"
 cp -va googlemaps subsurface-"$VERSION"/googlemaps
 cp -va qtlocation subsurface-"$VERSION"/qtlocation
 cp -va qtpositioning subsurface-"$VERSION"/qtpositioning
+cp -va irda subsurface-"$VERSION"/irda
 tar -czf subsurface_"$VERSION".orig.tar.gz subsurface-"$VERSION"
-rm -rf subsurface googlemaps qtlocation qtpositioning
+rm -rf subsurface googlemaps qtlocation qtpositioning irda
 
 echo export VERSION="$VERSION"

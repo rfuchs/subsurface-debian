@@ -52,6 +52,9 @@ override_dh_auto_configure:
 		INSTALL_ROOT=$(MY_INSTALL_ROOT) make install ; \
 		ln -sf $(MY_INSTALL_ROOT)/usr/lib/x86_64-linux-gnu/qt5/plugins/geoservices/*.so $(MY_INSTALL_ROOT))
 	(cd libdivecomputer ; \
+		if test -f $$(pwd)/../irda/src/include/linux/irda.h; then \
+			export CFLAGS="$$CFLAGS -I$$(pwd)/../irda/src/include"; \
+		fi; \
 		 autoreconf --install ; \
 		./configure --disable-examples --prefix=$(MY_INSTALL_ROOT) --disable-shared ; \
 		make -j`nproc` ; \
