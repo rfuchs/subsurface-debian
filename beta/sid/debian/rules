@@ -84,14 +84,13 @@ override_dh_auto_configure:
 override_dh_installchangelogs:
 	dh_installchangelogs
 	dh_installchangelogs ReleaseNotes/ReleaseNotes.txt
-	txt2html Documentation/user-manual.txt > Documentation/user-manual.html
-	mkdir -p debian/subsurface-beta/usr/share/doc/subsurface
-	cp Documentation/user-manual.txt debian/subsurface-beta/usr/share/doc/subsurface/
-	cp Documentation/user-manual.html debian/subsurface-beta/usr/share/doc/subsurface/html
+	mkdir -p debian/subsurface/usr/share/subsurface/Documentation
+	cp -r Documentation/output/. debian/subsurface/usr/share/subsurface/Documentation
 
 override_dh_auto_build:
 	(cd subsurface-build ; make -j`nproc`)
 	(cd downloader-build ; make -j`nproc`)
+	(cd Documentation ; make -j`nproc` doc)
 
 override_dh_auto_install:
 	(cd subsurface-build ; DESTDIR=$(CURDIR)/debian/subsurface-beta $(MAKE) install)

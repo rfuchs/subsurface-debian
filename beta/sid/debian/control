@@ -23,6 +23,7 @@ Build-Depends: asciidoc,
                libtool,
                libusb-1.0-0-dev,
                libxml2-dev,
+               libxml2-utils,
                libxslt1-dev,
                libzip-dev,
                pkg-config,
@@ -37,6 +38,7 @@ Build-Depends: asciidoc,
                qttools5-dev,
                qttools5-dev-tools,
                txt2html,
+               w3m,
                zlib1g-dev
 Standards-Version: 4.5.1
 Homepage: http://subsurface-divelog.org

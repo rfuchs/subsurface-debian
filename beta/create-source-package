@@ -30,6 +30,12 @@ if test -n "$THIS_BUILD_ID"; then
 	popd
 fi
 
+pushd subsurface
+./scripts/get-version.sh 1 > .latest-subsurface-buildnumber
+mv -f .latest-subsurface-buildnumber latest-subsurface-buildnumber
+echo dfx > latest-subsurface-buildnumber-extension
+popd
+
 git clone --depth 1 --single-branch --recurse-submodules --shallow-submodules https://github.com/subsurface/googlemaps.git
 rm -rf googlemaps/.git
 

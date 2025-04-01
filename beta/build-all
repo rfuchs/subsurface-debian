@@ -8,7 +8,7 @@ declare -a errors
 LAST_BUILD_ID=~/.sub.last.build.id
 BUILDDIR=~/tmp
 REPO=~/htdocs/dfx.at/subsurface
-RELEASES='trixie,~bpo13+1 sid, bookworm,~bpo12+1 bullseye,~bpo11+1'
+RELEASES='sid, trixie,~bpo13+1 bookworm,~bpo12+1 bullseye,~bpo11+1'
 ARCHS='amd64 i386'
 #ARCHS=amd64
 

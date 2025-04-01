@@ -9,7 +9,7 @@ VER_STUB=6.0.0
 LAST_BUILD_ID=~/.sub.last.current.build.id
 BUILDDIR=~/tmp
 REPO=~/htdocs/dfx.at/subsurface
-RELEASES='trixie,~bpo13+1 sid, bookworm,~bpo12+1 bullseye,~bpo11+1'
+RELEASES='sid, trixie,~bpo13+1 bookworm,~bpo12+1 bullseye,~bpo11+1'
 ARCHS='amd64 i386'
 
 test -n "$SUBSURFACE_DEBIAN_SRCDIR"
@@ -27,16 +27,16 @@ export LAST_BUILD_ID
 export THIS_BUILD_ID="$LAST_BUILD_ID.new"
 
 set +e
-. "$SUBSURFACE_DEBIAN_SRCDIR"/current/create-source-package
+"$SUBSURFACE_DEBIAN_SRCDIR"/current/create-source-package
 CODE=$?
 set -e
 
-export VERSION
-export VERSION_4
-export CANONICALVERSION=$VERSION
-export CANONICALVERSION_4=$VERSION_4
-export CANONICAL_VERSION_STRING=$VERSION
-export CANONICAL_VERSION_STRING_4=$VERSION_4
+export VERSION=$(<version)
+#export VERSION_4
+#export CANONICALVERSION=$VERSION
+#export CANONICALVERSION_4=$VERSION_4
+#export CANONICAL_VERSION_STRING=$VERSION
+#export CANONICAL_VERSION_STRING_4=$VERSION_4
 
 if test "$CODE" -ne 0; then
 	cd ..
