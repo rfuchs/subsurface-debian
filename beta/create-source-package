@@ -34,6 +34,8 @@ pushd subsurface
 ./scripts/get-version.sh 1 > .latest-subsurface-buildnumber
 mv -f .latest-subsurface-buildnumber latest-subsurface-buildnumber
 echo dfx > latest-subsurface-buildnumber-extension
+
+patch -p1 < "$SUBSURFACE_DEBIAN_SRCDIR"/qt6.patch
 popd
 
 git clone --depth 1 --single-branch --recurse-submodules --shallow-submodules https://github.com/subsurface/googlemaps.git
