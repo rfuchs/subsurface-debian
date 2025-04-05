@@ -84,8 +84,8 @@ override_dh_auto_configure:
 override_dh_installchangelogs:
 	dh_installchangelogs
 	dh_installchangelogs ReleaseNotes/ReleaseNotes.txt
-	mkdir -p debian/subsurface/usr/share/subsurface/Documentation
-	cp -r Documentation/output/. debian/subsurface/usr/share/subsurface/Documentation
+	mkdir -p debian/subsurface-beta/usr/share/subsurface/Documentation
+	cp -r Documentation/output/. debian/subsurface-beta/usr/share/subsurface/Documentation
 
 override_dh_auto_build:
 	(cd subsurface-build ; make -j`nproc`)

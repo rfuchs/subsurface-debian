@@ -1,0 +1,20 @@
+#!/bin/bash
+
+set -e
+set -x
+
+test -n "$RELEASE"
+test -n "$SUBSURFACE_DEBIAN_SRCDIR"
+test -n "$VERSION" # VERSION=$(date +%Y%m%d%H%H)
+test -n "$FULL_VER"
+
+test -f ../subsurface-qt6-beta_"$VERSION".orig.tar.gz
+test -d ../subsurface-qt6-beta-"$VERSION"
+test -d "$SUBSURFACE_DEBIAN_SRCDIR"/beta-qt6/"$RELEASE"/debian
+
+cp -va ../subsurface-qt6-beta_"$VERSION".orig.tar.gz ../subsurface-qt6-beta-"$VERSION" .
+cp -va "$SUBSURFACE_DEBIAN_SRCDIR"/beta-qt6/"$RELEASE"/debian subsurface-qt6-beta-"$VERSION"
+cd subsurface-qt6-beta-"$VERSION"
+dch -v "$FULL_VER" --create -D "$RELEASE" --force-distribution --package subsurface-qt6-beta "Beta build"
+cd ..
+dpkg-source -b subsurface-qt6-beta-"$VERSION"

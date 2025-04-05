@@ -1,0 +1,7 @@
+# We use the package
+subsurface-qt6-beta source: source-is-missing theme/jqplot.canvasAxisTickRenderer.min.js
+subsurface-qt6-beta source: source-is-missing theme/jqplot.canvasTextRenderer.min.js
+subsurface-qt6-beta source: source-is-missing theme/jqplot.highlighter.min.js
+subsurface-qt6-beta source: source-is-missing theme/jquery.jqplot.min.js
+subsurface-qt6-beta source: source-is-missing theme/jquery.min.js
+subsurface-qt6-beta source: source-is-missing theme/list_lib.js

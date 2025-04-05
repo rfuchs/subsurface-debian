@@ -1,0 +1,178 @@
+diff --git a/qgeocodereplygooglemaps.cpp b/qgeocodereplygooglemaps.cpp
+index 070276e..00c03f9 100644
+--- a/qgeocodereplygooglemaps.cpp
++++ b/qgeocodereplygooglemaps.cpp
+@@ -91,7 +91,7 @@ void QGeoCodeReplyGooglemaps::networkReplyFinished()
+                     QGeoRectangle r;
+                     r.setTopRight(constructCoordiante(jaddressRanges.value("northeast").toObject()));
+                     r.setBottomLeft(constructCoordiante(jaddressRanges.value("southwest").toObject()));
+-                    location.setBoundingBox(r);
++                    location.setBoundingShape(r);
+                 }
+ 
+                 QJsonArray jaddress = o.value("address_components").toArray();
+diff --git a/qgeocodingmanagerenginegooglemaps.cpp b/qgeocodingmanagerenginegooglemaps.cpp
+index f3a41ae..7813d1b 100644
+--- a/qgeocodingmanagerenginegooglemaps.cpp
++++ b/qgeocodingmanagerenginegooglemaps.cpp
+@@ -128,5 +128,5 @@ void QGeoCodingManagerEngineGooglemaps::replyError(QGeoCodeReply::Error errorCod
+ {
+     QGeoCodeReply *reply = qobject_cast<QGeoCodeReply *>(sender());
+     if (reply)
+-        emit error(reply, errorCode, errorString);
++        emit errorOccurred(reply, errorCode, errorString);
+ }
+diff --git a/qgeoroutingmanagerenginegooglemaps.cpp b/qgeoroutingmanagerenginegooglemaps.cpp
+index 5bc89a0..9e85ea6 100644
+--- a/qgeoroutingmanagerenginegooglemaps.cpp
++++ b/qgeoroutingmanagerenginegooglemaps.cpp
+@@ -36,7 +36,7 @@ QGeoRouteReply* QGeoRoutingManagerEngineGooglemaps::calculateRoute(const QGeoRou
+ 
+     if (m_apiKey.isEmpty()) {
+         QGeoRouteReply *reply = new QGeoRouteReply(QGeoRouteReply::UnsupportedOptionError, "Set googlemaps.route.apikey with google maps application key, supporting directions", this);
+-        emit error(reply, reply->error(), reply->errorString());
++        emit errorOccurred(reply, reply->error(), reply->errorString());
+         return reply;
+     }
+ 
+@@ -127,5 +127,5 @@ void QGeoRoutingManagerEngineGooglemaps::replyError(QGeoRouteReply::Error errorC
+ {
+     QGeoRouteReply *reply = qobject_cast<QGeoRouteReply *>(sender());
+     if (reply)
+-        emit error(reply, errorCode, errorString);
++        emit errorOccurred(reply, errorCode, errorString);
+ }
+diff --git a/qgeoserviceproviderplugingooglemaps.h b/qgeoserviceproviderplugingooglemaps.h
+index ab53719..89e0f50 100644
+--- a/qgeoserviceproviderplugingooglemaps.h
++++ b/qgeoserviceproviderplugingooglemaps.h
+@@ -8,7 +8,7 @@ class QGeoServiceProviderFactoryGooglemaps: public QObject, public QGeoServicePr
+ {
+     Q_OBJECT
+     Q_INTERFACES(QGeoServiceProviderFactory)
+-    Q_PLUGIN_METADATA(IID "org.qt-project.qt.geoservice.serviceproviderfactory/5.0"
++    Q_PLUGIN_METADATA(IID "org.qt-project.qt.geoservice.serviceproviderfactory/6.0"
+                       FILE "googlemaps_plugin.json")
+ 
+ public:
+diff --git a/qgeotilefetchergooglemaps.cpp b/qgeotilefetchergooglemaps.cpp
+index a57b1fd..0ea1e11 100644
+--- a/qgeotilefetchergooglemaps.cpp
++++ b/qgeotilefetchergooglemaps.cpp
+@@ -200,8 +200,7 @@ void QGeoTileFetcherGooglemaps::_tryCorrectGoogleVersions(QNetworkAccessManager*
+         _googleReply = networkManager->get(qheader);
+         connect(_googleReply, &QNetworkReply::finished, this, &QGeoTileFetcherGooglemaps::_googleVersionCompleted);
+         connect(_googleReply, &QNetworkReply::destroyed, this, &QGeoTileFetcherGooglemaps::_replyDestroyed);
+-        connect(_googleReply, static_cast<void (QNetworkReply::*)(QNetworkReply::NetworkError)>(&QNetworkReply::error),
+-                this, &QGeoTileFetcherGooglemaps::_networkReplyError);
++        connect(_googleReply, &QNetworkReply::errorOccurred, this, &QGeoTileFetcherGooglemaps::_networkReplyError);
+         networkManager->setProxy(proxy);
+     }
+ }
+diff --git a/qplacecategoriesreplygooglemaps.cpp b/qplacecategoriesreplygooglemaps.cpp
+index 2a97ad8..21d2395 100644
+--- a/qplacecategoriesreplygooglemaps.cpp
++++ b/qplacecategoriesreplygooglemaps.cpp
+@@ -18,5 +18,5 @@ void QPlaceCategoriesReplyGooglemaps::emitFinished()
+ void QPlaceCategoriesReplyGooglemaps::setError(QPlaceReply::Error errorCode, const QString &errorString)
+ {
+     QPlaceReply::setError(errorCode, errorString);
+-    emit error(errorCode, errorString);
++    emit errorOccurred(errorCode, errorString);
+ }
+diff --git a/qplacemanagerenginegooglemaps.cpp b/qplacemanagerenginegooglemaps.cpp
+index c9b51dd..5910624 100644
+--- a/qplacemanagerenginegooglemaps.cpp
++++ b/qplacemanagerenginegooglemaps.cpp
+@@ -10,6 +10,8 @@
+ #include <QtNetwork/QNetworkRequest>
+ #include <QtNetwork/QNetworkReply>
+ #include <QtPositioning/QGeoCircle>
++#include <QtLocation/QPlaceCategory>
++#include <QtLocation/QPlaceSearchRequest>
+ #include <QtLocation/private/unsupportedreplies_p.h>
+ 
+ #include <QtCore/QElapsedTimer>
+@@ -322,11 +324,11 @@ void QPlaceManagerEngineGooglemaps::categoryReplyFinished()
+             QRegularExpressionMatchIterator i = regex.globalMatch(page);
+             while (i.hasNext()) {
+                 QRegularExpressionMatch match = i.next();
+-                QString name = match.capturedRef(1).toString();
+-                QString tagKey = match.capturedRef(2).toString();
+-                QString tagValue = match.capturedRef(3).toString();
+-                QString op = match.capturedRef(4).toString();
+-                QString plural = match.capturedRef(5).toString();
++                QString name = match.captured(1);
++                QString tagKey = match.captured(2);
++                QString tagValue = match.captured(3);
++                QString op = match.captured(4);
++                QString plural = match.captured(5);
+ 
+                 // Only interested in any operator plural forms
+                 if (op != QLatin1String("-") || plural != QLatin1String("Y"))
+@@ -385,7 +387,7 @@ void QPlaceManagerEngineGooglemaps::replyError(QPlaceReply::Error errorCode, con
+ {
+     QPlaceReply *reply = qobject_cast<QPlaceReply *>(sender());
+     if (reply)
+-        emit error(reply, errorCode, errorString);
++        emit errorOccurred(reply, errorCode, errorString);
+ }
+ 
+ void QPlaceManagerEngineGooglemaps::fetchNextCategoryLocale()
+diff --git a/qplacesearchreplygooglemaps.cpp b/qplacesearchreplygooglemaps.cpp
+index 40d3ce1..238b516 100644
+--- a/qplacesearchreplygooglemaps.cpp
++++ b/qplacesearchreplygooglemaps.cpp
+@@ -5,8 +5,12 @@
+ #include <QtCore/QJsonArray>
+ #include <QtCore/QJsonObject>
+ #include <QtNetwork/QNetworkReply>
++#include <QtPositioning/QGeoAddress>
+ #include <QtPositioning/QGeoCircle>
++#include <QtPositioning/QGeoLocation>
+ #include <QtPositioning/QGeoRectangle>
++#include <QtLocation/QPlace>
++#include <QtLocation/QPlaceIcon>
+ #include <QtLocation/QPlaceResult>
+ #include <QtLocation/QPlaceSearchRequest>
+ 
+@@ -38,7 +42,7 @@ void QPlaceSearchReplyGooglemaps::abort()
+ void QPlaceSearchReplyGooglemaps::setError(QPlaceReply::Error errorCode, const QString &errorString)
+ {
+     QPlaceReply::setError(errorCode, errorString);
+-    emit error(errorCode, errorString);
++    emit errorOccurred(errorCode, errorString);
+     setFinished(true);
+     emit finished();
+ }
+@@ -163,7 +167,7 @@ QPlaceResult QPlaceSearchReplyGooglemaps::parsePlaceResult(const QJsonObject &it
+     QGeoLocation location;
+     location.setCoordinate(coordinate);
+     location.setAddress(address);
+-    location.setBoundingBox(parseBoundingBox(item.value(QStringLiteral("boundingbox")).toArray()));
++    location.setBoundingShape(parseBoundingBox(item.value(QStringLiteral("boundingbox")).toArray()));
+ 
+     place.setLocation(location);
+ 
+diff --git a/qplacesearchsuggestionreplyimpl.cpp b/qplacesearchsuggestionreplyimpl.cpp
+index fe9f9f0..f575e8b 100644
+--- a/qplacesearchsuggestionreplyimpl.cpp
++++ b/qplacesearchsuggestionreplyimpl.cpp
+@@ -69,7 +69,7 @@ void QPlaceSearchSuggestionReplyImpl::setError(QPlaceReply::Error error_,
+                                                const QString &errorString)
+ {
+     QPlaceReply::setError(error_, errorString);
+-    emit error(error_, errorString);
++    emit errorOccurred(error_, errorString);
+     setFinished(true);
+     emit finished();
+ }
+@@ -90,7 +90,7 @@ void QPlaceSearchSuggestionReplyImpl::replyFinished()
+     QJsonDocument document = QJsonDocument::fromJson(m_reply->readAll());
+     if (!document.isObject()) {
+         setError(ParseError, QCoreApplication::translate(NOKIA_PLUGIN_CONTEXT_NAME, PARSE_ERROR));
+-        emit error(error(), errorString());
++        emit errorOccurred(error(), errorString());
+         return;
+     }
+ 

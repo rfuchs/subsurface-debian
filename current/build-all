@@ -31,7 +31,6 @@ set +e
 CODE=$?
 set -e
 
-export VERSION=$(<version)
 #export VERSION_4
 #export CANONICALVERSION=$VERSION
 #export CANONICALVERSION_4=$VERSION_4
@@ -47,6 +46,8 @@ if test "$CODE" -ne 0; then
 	fi
 	exit "$CODE"
 fi
+
+export VERSION=$(<version)
 
 #COMMIT=$(<"$THIS_BUILD_ID")
 #COMMIT_SHORT=${COMMIT:0:8}

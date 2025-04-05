@@ -1,0 +1,84 @@
+#!/bin/bash
+
+set -e
+set -x
+
+test -d "$SUBSURFACE_DEBIAN_SRCDIR"
+
+if test -z "$VERSION"; then
+	VERSION=$(date +%Y%m%d%H%M)
+fi
+
+git clone --single-branch --recurse-submodules --shallow-submodules https://github.com/subsurface/subsurface.git
+
+if test -n "$THIS_BUILD_ID"; then
+	pushd subsurface
+
+	THIS_ID=$(git rev-parse HEAD)
+	if test -n "$LAST_BUILD_ID" -a -f "$LAST_BUILD_ID"; then
+		LAST_ID=$(<"$LAST_BUILD_ID")
+		if test "$LAST_ID" = "$THIS_ID"; then
+			echo no new commits
+			exit 42
+		fi
+	fi
+
+	echo "$THIS_ID" > "$THIS_BUILD_ID"
+	popd
+fi
+
+pushd subsurface
+./scripts/get-version.sh 1 > .latest-subsurface-buildnumber
+mv -f .latest-subsurface-buildnumber latest-subsurface-buildnumber
+echo dfx > latest-subsurface-buildnumber-extension
+popd
+
+if true; then
+	git clone --depth 1 --single-branch --recurse-submodules --shallow-submodules https://github.com/vladest/googlemaps.git
+	rm -rf googlemaps/.git
+else
+	git clone --depth 1 --single-branch --recurse-submodules --shallow-submodules https://github.com/subsurface/googlemaps.git
+	rm -rf googlemaps/.git
+
+	pushd googlemaps
+	patch -l -p1 < "$SUBSURFACE_DEBIAN_SRCDIR/beta-qt6/googlemaps.patch"
+	popd
+fi
+
+#git clone --depth 1 --single-branch --recurse-submodules --shallow-submodules https://github.com/qt/qtlocation.git
+git clone --single-branch --recurse-submodules --shallow-submodules https://github.com/qt/qtlocation.git
+pushd qtlocation
+git checkout f32bfdb888
+rm -rf .git
+popd
+
+### #git clone --depth 1 --single-branch --recurse-submodules --shallow-submodules https://github.com/qt/qtpositioning.git
+### git clone --single-branch --recurse-submodules --shallow-submodules https://github.com/qt/qtpositioning.git
+### pushd qtpositioning
+### git checkout cfa650683e
+### rm -rf .git
+### popd
+
+git clone https://github.com/cschramm/irda.git
+test -d irda
+
+test ! -e subsurface-qt6-beta-"$VERSION"
+mkdir subsurface-qt6-beta-"$VERSION"
+
+rm -rf subsurface/.github
+rm -rf subsurface/.git
+rm -rf subsurface/libdivecomputer/.github
+rm -rf subsurface/libdivecomputer/.git
+rm -rf qtlocation/.git
+rm -rf qtpositioning/.git
+rm -rf irda/.git
+
+cp -va subsurface/. subsurface-qt6-beta-"$VERSION"
+cp -va googlemaps subsurface-qt6-beta-"$VERSION"/googlemaps
+cp -va qtlocation subsurface-qt6-beta-"$VERSION"/qtlocation
+### cp -va qtpositioning subsurface-qt6-beta-"$VERSION"/qtpositioning
+cp -va irda subsurface-qt6-beta-"$VERSION"/irda
+tar -czf subsurface-qt6-beta_"$VERSION".orig.tar.gz subsurface-qt6-beta-"$VERSION"
+rm -rf subsurface googlemaps qtlocation qtpositioning irda
+
+echo export VERSION="$VERSION"

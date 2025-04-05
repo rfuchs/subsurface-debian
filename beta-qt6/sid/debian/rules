@@ -6,7 +6,7 @@ export DH_VERBOSE=1
 export DEB_BUILD_OPTIONS+=nocheck
 export DEB_BUILD_OPTIONS+="parallel=`nproc`"
 export MY_INSTALL_ROOT=$(CURDIR)/install-root
-export QTVERSION=$(shell qmake -query QT_VERSION)
+#export QTVERSION=$(shell qmake -query QT_VERSION)
 
 %:
 	dh $@ --buildsystem=cmake --builddirectory=subsurface-build --parallel
@@ -42,11 +42,10 @@ override_dh_auto_clean:
 
 override_dh_auto_configure:
 	mkdir -p install-root
-	(mkdir -p $(MY_INSTALL_ROOT)/include/QtLocation/private; mkdir -p $(MY_INSTALL_ROOT)/include/QtPositioning/private; \
-		find qtlocation/src/location -name '*_p.h' -print0 | xargs -0 cp -vt $(MY_INSTALL_ROOT)/include/QtLocation/private; \
-		find qtpositioning/src/positioning -name '*_p.h' -print0 | xargs -0 cp -vt $(MY_INSTALL_ROOT)/include/QtPositioning/private)
+	(mkdir -p $(MY_INSTALL_ROOT)/include/QtLocation/private; \
+		find qtlocation/src/location -name '*_p.h' -print0 | xargs -0 cp -vt $(MY_INSTALL_ROOT)/include/QtLocation/private)
 	(mkdir -p googlemaps/build ; cd googlemaps/build ; \
-		qmake "INCLUDEPATH=../../QtHeaders/$(QTVERSION)/include $(MY_INSTALL_ROOT)/include" ../googlemaps.pro ; \
+		qmake6 "INCLUDEPATH=$(MY_INSTALL_ROOT)/include" ../googlemaps.pro ; \
 		rm -rf $(QTLOC_GIT) > /dev/null 2>&1 ; \
 		make -j`nproc` ; \
 		INSTALL_ROOT=$(MY_INSTALL_ROOT) make install ; \
@@ -68,6 +67,7 @@ override_dh_auto_configure:
 			-DFORCE_LIBSSH=1 \
 			-DNO_PRINTING=OFF \
 			-DMAKE_TESTS=OFF \
+			-DBUILD_WITH_QT6=ON \
 			$$(pwd)/.. ; )
 	(mkdir downloader-build ; cd downloader-build ;  \
 		cmake -DCMAKE_BUILD_TYPE=Release \
@@ -78,14 +78,15 @@ override_dh_auto_configure:
 			-DFORCE_LIBSSH=1 \
 			-DNO_PRINTING=OFF \
 			-DMAKE_TESTS=OFF \
+			-DBUILD_WITH_QT6=ON \
 			-DSUBSURFACE_TARGET_EXECUTABLE=DownloaderExecutable \
 			$$(pwd)/.. ; )
 
 override_dh_installchangelogs:
 	dh_installchangelogs
 	dh_installchangelogs ReleaseNotes/ReleaseNotes.txt
-	mkdir -p debian/subsurface-beta/usr/share/subsurface/Documentation
-	cp -r Documentation/output/. debian/subsurface-beta/usr/share/subsurface/Documentation
+	mkdir -p debian/subsurface-qt6-beta/usr/share/subsurface/Documentation
+	cp -r Documentation/output/. debian/subsurface-qt6-beta/usr/share/subsurface/Documentation
 
 override_dh_auto_build:
 	(cd subsurface-build ; make -j`nproc`)
@@ -93,18 +94,18 @@ override_dh_auto_build:
 	(cd Documentation ; make -j`nproc` doc)
 
 override_dh_auto_install:
-	(cd subsurface-build ; DESTDIR=$(CURDIR)/debian/subsurface-beta $(MAKE) install)
-	(cd googlemaps/build ; INSTALL_ROOT=$(CURDIR)/debian/subsurface-beta $(MAKE) install)
-	(cd downloader-build ; DESTDIR=$(CURDIR)/debian/subsurface-beta-downloader $(MAKE) install)
-	mkdir -p $(CURDIR)/debian/subsurface-beta-common/usr/share
-	mv -fv $(CURDIR)/debian/subsurface-beta/usr/share/subsurface $(CURDIR)/debian/subsurface-beta-common/usr/share/
-	rm -rf $(CURDIR)/debian/subsurface-beta-downloader/usr/share/subsurface
-	mv -fv $(CURDIR)/debian/subsurface-beta/usr/share/icons $(CURDIR)/debian/subsurface-beta-common/usr/share/
-	rm -rf $(CURDIR)/debian/subsurface-beta-downloader/usr/share/icons
-	mv -fv $(CURDIR)/debian/subsurface-beta/usr/share/metainfo $(CURDIR)/debian/subsurface-beta-common/usr/share/
-	rm -rf $(CURDIR)/debian/subsurface-beta-downloader/usr/share/metainfo
-	rm -rf $(CURDIR)/debian/subsurface-beta-downloader/usr/share/applications
-	install -m 755 -D -t $(CURDIR)/debian/subsurface-beta-downloader/usr/share/subsurface/cgi-bin $(CURDIR)/scripts/downloader.pl
-	sed -i 's,/home/pi/[^ ]*/subsurface-downloader,/usr/bin/subsurface-downloader,g' $(CURDIR)/debian/subsurface-beta-downloader/usr/share/subsurface/cgi-bin/downloader.pl
-	mv -vi $(CURDIR)/debian/subsurface-beta-downloader/usr/bin/subsurface.debug $(CURDIR)/debian/subsurface-beta-downloader/usr/bin/subsurface-downloader.debug
-	sed -i 's/^bin_name=subsurface$$/bin_name=subsurface-downloader/' $(CURDIR)/debian/subsurface-beta-downloader/usr/bin/subsurface-downloader.debug
+	(cd subsurface-build ; DESTDIR=$(CURDIR)/debian/subsurface-qt6-beta $(MAKE) install)
+	(cd googlemaps/build ; INSTALL_ROOT=$(CURDIR)/debian/subsurface-qt6-beta $(MAKE) install)
+	(cd downloader-build ; DESTDIR=$(CURDIR)/debian/subsurface-qt6-beta-downloader $(MAKE) install)
+	mkdir -p $(CURDIR)/debian/subsurface-qt6-beta-common/usr/share
+	mv -fv $(CURDIR)/debian/subsurface-qt6-beta/usr/share/subsurface $(CURDIR)/debian/subsurface-qt6-beta-common/usr/share/
+	rm -rf $(CURDIR)/debian/subsurface-qt6-beta-downloader/usr/share/subsurface
+	mv -fv $(CURDIR)/debian/subsurface-qt6-beta/usr/share/icons $(CURDIR)/debian/subsurface-qt6-beta-common/usr/share/
+	rm -rf $(CURDIR)/debian/subsurface-qt6-beta-downloader/usr/share/icons
+	mv -fv $(CURDIR)/debian/subsurface-qt6-beta/usr/share/metainfo $(CURDIR)/debian/subsurface-qt6-beta-common/usr/share/
+	rm -rf $(CURDIR)/debian/subsurface-qt6-beta-downloader/usr/share/metainfo
+	rm -rf $(CURDIR)/debian/subsurface-qt6-beta-downloader/usr/share/applications
+	install -m 755 -D -t $(CURDIR)/debian/subsurface-qt6-beta-downloader/usr/share/subsurface/cgi-bin $(CURDIR)/scripts/downloader.pl
+	sed -i 's,/home/pi/[^ ]*/subsurface-downloader,/usr/bin/subsurface-downloader,g' $(CURDIR)/debian/subsurface-qt6-beta-downloader/usr/share/subsurface/cgi-bin/downloader.pl
+	mv -vi $(CURDIR)/debian/subsurface-qt6-beta-downloader/usr/bin/subsurface.debug $(CURDIR)/debian/subsurface-qt6-beta-downloader/usr/bin/subsurface-downloader.debug
+	sed -i 's/^bin_name=subsurface$$/bin_name=subsurface-downloader/' $(CURDIR)/debian/subsurface-qt6-beta-downloader/usr/bin/subsurface-downloader.debug
