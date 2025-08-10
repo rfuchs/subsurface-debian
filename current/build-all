@@ -9,7 +9,7 @@ VER_STUB=6.0.0
 LAST_BUILD_ID=~/.sub.last.current.build.id
 BUILDDIR=~/tmp
 REPO=~/htdocs/dfx.at/subsurface
-RELEASES='sid, trixie,~bpo13+1 bookworm,~bpo12+1 bullseye,~bpo11+1'
+RELEASES='forky,~bpo14+1 sid, trixie,~bpo13+1 bookworm,~bpo12+1 bullseye,~bpo11+1'
 ARCHS='amd64 i386'
 
 test -n "$SUBSURFACE_DEBIAN_SRCDIR"
