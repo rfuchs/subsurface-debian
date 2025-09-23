@@ -1,0 +1,44 @@
+#!/bin/bash
+
+set -e
+set -x
+
+LAST_BUILD_ID=~/.sub.last.source.build.id
+BUILDDIR=~/tmp
+SOURCE_QUEUE=~/var/source-queue
+PACKAGE=subsurface-beta
+
+test -d "$BUILDDIR"
+test -n "$SUBSURFACE_DEBIAN_SRCDIR"
+test -d "$SUBSURFACE_DEBIAN_SRCDIR"
+test -d "$SOURCE_QUEUE"
+
+pushd "$BUILDDIR"
+mkdir build.$$
+pushd build.$$
+
+export VERSION=$(date +%Y%m%d%H%M)
+
+export LAST_BUILD_ID
+export THIS_BUILD_ID="$LAST_BUILD_ID.new"
+
+set +e
+"$SUBSURFACE_DEBIAN_SRCDIR"/beta/create-source-package
+CODE=$?
+set -e
+
+test -f "$PACKAGE"_"$VERSION".orig.tar.gz
+
+if test "$CODE" -eq 0; then
+	mv -v "$PACKAGE"_"$VERSION".orig.tar.gz "$SOURCE_QUEUE"
+	ln -sf "$PACKAGE"_"$VERSION".orig.tar.gz "$SOURCE_QUEUE"/"$PACKAGE"
+	mv -f "$THIS_BUILD_ID" "$LAST_BUILD_ID"
+fi
+
+popd
+rm -rf build.$$
+
+if test "$CODE" -eq 42; then
+	exit 0
+fi
+exit "$CODE"

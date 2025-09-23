@@ -1,0 +1,71 @@
+#!/bin/bash
+
+set -e
+set -x
+
+BUILDDIR=~/tmp
+REPO=~/htdocs/dfx.at/subsurface-new
+URI=https://home.dfx.at/subsurface-new # .../pool/...
+SOURCE_QUEUE=~/var/source-queue
+BUILD_QUEUE=~/var/build-queue-test
+RELEASES='forky,~bpo14+1 sid, trixie,~bpo13+1 bookworm,~bpo12+1 bullseye,~bpo11+1'
+PACKAGE=subsurface-beta
+
+BUILDNUM=${BUILDNUM:-1}
+
+ORIG_SUFFIX=.orig.tar.gz
+
+test -d "$SOURCE_QUEUE"
+test -n "$SUBSURFACE_DEBIAN_SRCDIR"
+test -d "$SUBSURFACE_DEBIAN_SRCDIR"
+test -d "$BUILD_QUEUE"
+
+test -f "$SOURCE_QUEUE"/"$PACKAGE" || exit 0
+
+ORIG=$(readlink -f "$SOURCE_QUEUE"/"$PACKAGE")
+test -n "$ORIG"
+test -f "$ORIG"
+
+pushd "$BUILDDIR"
+mkdir build.$$
+pushd build.$$
+
+test -f "$ORIG"
+cp -v "$ORIG" .
+ORIG=$(basename "$ORIG")
+test -n "$ORIG"
+tar -vxzf "$ORIG"
+
+PACK_VER=$(basename "$ORIG" "$ORIG_SUFFIX")
+VERSION=${PACK_VER##"$PACKAGE"_}
+export VERSION
+
+test -f "$PACKAGE"_"$VERSION$ORIG_SUFFIX"
+test -d "$PACKAGE"-"$VERSION"
+
+for RELEASE in $RELEASES; do
+	IFS=, read -a REL_NAMES <<< "$RELEASE"
+	RELEASE=${REL_NAMES[0]}
+	REL_CODE=${REL_NAMES[1]}
+	FULL_VER="$VERSION"-"$BUILDNUM$REL_CODE"
+	export RELEASE
+	export REL_CODE
+	export FULL_VER
+	mkdir "$RELEASE"
+	pushd "$RELEASE"
+	"$SUBSURFACE_DEBIAN_SRCDIR"/beta/create-debian-build
+	debsign "$PACKAGE"_"$FULL_VER".dsc
+	reprepro -Vb "$REPO" -C main includedsc "$RELEASE" "$PACKAGE"_"$FULL_VER".dsc
+
+	echo "$URI"/pool/main/s/"$PACKAGE"/"$PACKAGE"_"$FULL_VER".dsc > "$BUILD_QUEUE"/."$PACKAGE"."$RELEASE".$$
+	mv "$BUILD_QUEUE"/."$PACKAGE"."$RELEASE".$$ "$BUILD_QUEUE"/"$PACKAGE"."$RELEASE"
+
+	popd
+done
+
+popd
+rm -rf build.$$
+
+rm -f "$SOURCE_QUEUE"/"$PACKAGE" "$SOURCE_QUEUE"/"$ORIG"
+
+exit 0
