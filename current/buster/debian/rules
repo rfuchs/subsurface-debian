@@ -67,7 +67,7 @@ override_dh_auto_configure:
 			-DLIBDIVECOMPUTER_LIBRARIES=$(MY_INSTALL_ROOT)/lib/libdivecomputer.a \
 			-DFORCE_LIBSSH=1 \
 			-DNO_PRINTING=OFF \
-			-DMAKE_TESTS=OFF \
+			-DBUILD_TESTS=OFF \
 			$$(pwd)/.. ; )
 	(mkdir downloader-build ; cd downloader-build ;  \
 		cmake -DCMAKE_BUILD_TYPE=Release \
@@ -77,7 +77,7 @@ override_dh_auto_configure:
 			-DLIBDIVECOMPUTER_LIBRARIES=$(MY_INSTALL_ROOT)/lib/libdivecomputer.a \
 			-DFORCE_LIBSSH=1 \
 			-DNO_PRINTING=OFF \
-			-DMAKE_TESTS=OFF \
+			-DBUILD_TESTS=OFF \
 			-DSUBSURFACE_TARGET_EXECUTABLE=DownloaderExecutable \
 			$$(pwd)/.. ; )
 

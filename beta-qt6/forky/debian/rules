@@ -66,7 +66,7 @@ override_dh_auto_configure:
 			-DLIBDIVECOMPUTER_LIBRARIES=$(MY_INSTALL_ROOT)/lib/libdivecomputer.a \
 			-DFORCE_LIBSSH=1 \
 			-DNO_PRINTING=OFF \
-			-DMAKE_TESTS=OFF \
+			-DBUILD_TESTS=OFF \
 			-DBUILD_WITH_QT6=ON \
 			$$(pwd)/.. ; )
 	(mkdir downloader-build ; cd downloader-build ;  \
@@ -77,7 +77,7 @@ override_dh_auto_configure:
 			-DLIBDIVECOMPUTER_LIBRARIES=$(MY_INSTALL_ROOT)/lib/libdivecomputer.a \
 			-DFORCE_LIBSSH=1 \
 			-DNO_PRINTING=OFF \
-			-DMAKE_TESTS=OFF \
+			-DBUILD_TESTS=OFF \
 			-DBUILD_WITH_QT6=ON \
 			-DSUBSURFACE_TARGET_EXECUTABLE=DownloaderExecutable \
 			$$(pwd)/.. ; )
