@@ -39,6 +39,8 @@ Build-Depends: asciidoc,
                qt6-positioning-private-dev,
                qt6-svg-dev,
                qt6-tools-dev,
+               qt6-webengine-dev,
+               qt6-webengine-private-dev,
                txt2html,
                zlib1g-dev
 Standards-Version: 4.5.1
