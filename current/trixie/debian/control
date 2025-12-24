@@ -3,6 +3,7 @@ Section: utils
 Priority: optional
 Maintainer: Richard Fuchs <dfx@dfx.at>
 Build-Depends: asciidoc,
+               asciidoctor,
                autoconf,
                automake,
                cmake,
