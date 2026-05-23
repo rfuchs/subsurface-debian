@@ -53,8 +53,8 @@ popd
 git clone https://github.com/cschramm/irda.git
 test -d irda
 
-test ! -e subsurface-"$VERSION"
-mkdir subsurface-"$VERSION"
+test ! -e subsurface-qt6-"$VERSION"
+mkdir subsurface-qt6-"$VERSION"
 
 rm -rf subsurface/.github
 rm -rf subsurface/.git
@@ -64,12 +64,12 @@ rm -rf qtlocation/.git
 rm -rf qtpositioning/.git
 rm -rf irda/.git
  
-cp -va subsurface/. subsurface-"$VERSION"
-cp -va googlemaps subsurface-"$VERSION"/googlemaps
-cp -va qtlocation subsurface-"$VERSION"/qtlocation
-cp -va qtpositioning subsurface-"$VERSION"/qtpositioning
-cp -va irda subsurface-"$VERSION"/irda
-tar -czf subsurface_"$VERSION".orig.tar.gz subsurface-"$VERSION"
+cp -va subsurface/. subsurface-qt6-"$VERSION"
+cp -va googlemaps subsurface-qt6-"$VERSION"/googlemaps
+cp -va qtlocation subsurface-qt6-"$VERSION"/qtlocation
+cp -va qtpositioning subsurface-qt6-"$VERSION"/qtpositioning
+cp -va irda subsurface-qt6-"$VERSION"/irda
+tar -czf subsurface-qt6_"$VERSION".orig.tar.gz subsurface-qt6-"$VERSION"
 rm -rf subsurface googlemaps qtlocation qtpositioning irda
 
 echo "$VERSION" > version

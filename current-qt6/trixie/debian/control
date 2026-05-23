@@ -1,4 +1,4 @@
-Source: subsurface
+Source: subsurface-qt6
 Section: utils
 Priority: optional
 Maintainer: Richard Fuchs <dfx@dfx.at>

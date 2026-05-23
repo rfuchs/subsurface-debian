@@ -5,19 +5,15 @@ set -x
 
 declare -a errors
 
-LAST_BUILD_ID=~/.sub.last.current.build.id
+LAST_BUILD_ID=~/.sub.last.current-qt6.build.id
 BUILDDIR=~/tmp
 REPO=~/htdocs/dfx.at/subsurface
-RELEASES='forky,~bpo14+1 sid, trixie,~bpo13+1 bookworm,~bpo12+1 bullseye,~bpo11+1'
+RELEASES='forky,~bpo14+1 sid, trixie,~bpo13+1'
 
 test -n "$SUBSURFACE_DEBIAN_SRCDIR"
 
 cd "$BUILDDIR"
 mkdir build.$$
-
-OUTPUT_DIR="$BUILDDIR/artefacts.$$"
-mkdir artefacts.$$
-test -d "$OUTPUT_DIR"
 
 cd build.$$
 
@@ -25,14 +21,13 @@ export LAST_BUILD_ID
 export THIS_BUILD_ID="$LAST_BUILD_ID.new"
 
 set +e
-"$SUBSURFACE_DEBIAN_SRCDIR"/current/create-source-package
+"$SUBSURFACE_DEBIAN_SRCDIR"/current-qt6/create-source-package
 CODE=$?
 set -e
 
 if test "$CODE" -ne 0; then
 	cd ..
 	rm -rf build.$$
-	rm -rf "$OUTPUT_DIR"
 	if test "$CODE" -eq 42; then
 		exit 0
 	fi
@@ -51,20 +46,19 @@ for RELEASE in $RELEASES; do
 	export FULL_VER
 	mkdir "$RELEASE"
 	cd "$RELEASE"
-	"$SUBSURFACE_DEBIAN_SRCDIR"/current/create-debian-build
-	debsign "$OUTPUT_DIR"/subsurface_"$FULL_VER".dsc
-	reprepro -Vb "$REPO" -C main includedsc "$RELEASE" "$OUTPUT_DIR"/subsurface_"$FULL_VER".dsc
+	"$SUBSURFACE_DEBIAN_SRCDIR"/current-qt6/create-debian-build
+	debsign subsurface-qt6_"$FULL_VER".dsc
+	reprepro -Vb "$REPO" -C main includedsc "$RELEASE" subsurface-qt6_"$FULL_VER".dsc
 
 	if test -d ~/var/src-build-q; then
-		echo https://subsurface.dfx.at/pool/main/s/subsurface/subsurface_"$FULL_VER".dsc > ~/var/src-build-q/.subsurface."$RELEASE".$$ || true
-		mv ~/var/src-build-q/.subsurface."$RELEASE".$$ ~/var/src-build-q/subsurface."$RELEASE" || true
+		echo https://subsurface.dfx.at/pool/main/s/subsurface/subsurface-qt6_"$FULL_VER".dsc > ~/var/src-build-q/.subsurface-qt6."$RELEASE".$$ || true
+		mv ~/var/src-build-q/.subsurface-qt6."$RELEASE".$$ ~/var/src-build-q/subsurface-qt6."$RELEASE" || true
 	fi
 	cd ..
 done
 
 cd ..
 rm -rf build.$$
-rm -rf "$OUTPUT_DIR"
 
 mv -f "$THIS_BUILD_ID" "$LAST_BUILD_ID"
 
