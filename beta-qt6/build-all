@@ -84,7 +84,11 @@ for RELEASE in $RELEASES; do
 	if test -d ~/var/arm-queue; then
 		echo https://subsurface.dfx.at/pool/main/s/subsurface-qt6-beta/subsurface-qt6-beta_"$FULL_VER".dsc > ~/var/arm-queue/.subsurface-qt6-beta."$RELEASE".$$ || true
 		mv ~/var/arm-queue/.subsurface-qt6-beta."$RELEASE".$$ ~/var/arm-queue/subsurface-qt6-beta."$RELEASE" || true
-fi
+	fi
+	if test -d ~/var/src-build-q; then
+		echo https://subsurface.dfx.at/pool/main/s/subsurface-qt6-beta/subsurface-qt6-beta_"$FULL_VER".dsc > ~/var/src-build-q/.subsurface-qt6-beta."$RELEASE".$$ || true
+		mv ~/var/src-build-q/.subsurface-qt6-beta."$RELEASE".$$ ~/var/src-build-q/subsurface-qt6-beta."$RELEASE" || true
+	fi
 	cd ..
 done
 

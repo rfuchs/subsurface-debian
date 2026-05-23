@@ -84,6 +84,10 @@ for RELEASE in $RELEASES; do
 		echo https://subsurface.dfx.at/pool/main/s/subsurface-beta/subsurface-beta_"$FULL_VER".dsc > ~/var/arm-queue/.subsurface-beta."$RELEASE".$$ || true
 		mv ~/var/arm-queue/.subsurface-beta."$RELEASE".$$ ~/var/arm-queue/subsurface-beta."$RELEASE" || true
 	fi
+	if test -d ~/var/src-build-q; then
+		echo https://subsurface.dfx.at/pool/main/s/subsurface-beta/subsurface-beta_"$FULL_VER".dsc > ~/var/src-build-q/.subsurface-beta."$RELEASE".$$ || true
+		mv ~/var/src-build-q/.subsurface-beta."$RELEASE".$$ ~/var/src-build-q/subsurface-beta."$RELEASE" || true
+	fi
 	cd ..
 done
 
