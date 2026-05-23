@@ -5,12 +5,10 @@ set -x
 
 declare -a errors
 
-VER_STUB=6.0.0
 LAST_BUILD_ID=~/.sub.last.current.build.id
 BUILDDIR=~/tmp
 REPO=~/htdocs/dfx.at/subsurface
 RELEASES='forky,~bpo14+1 sid, trixie,~bpo13+1 bookworm,~bpo12+1 bullseye,~bpo11+1'
-ARCHS='amd64 i386'
 
 test -n "$SUBSURFACE_DEBIAN_SRCDIR"
 
@@ -31,12 +29,6 @@ set +e
 CODE=$?
 set -e
 
-#export VERSION_4
-#export CANONICALVERSION=$VERSION
-#export CANONICALVERSION_4=$VERSION_4
-#export CANONICAL_VERSION_STRING=$VERSION
-#export CANONICAL_VERSION_STRING_4=$VERSION_4
-
 if test "$CODE" -ne 0; then
 	cd ..
 	rm -rf build.$$
@@ -49,10 +41,6 @@ fi
 
 export VERSION=$(<version)
 
-#COMMIT=$(<"$THIS_BUILD_ID")
-#COMMIT_SHORT=${COMMIT:0:8}
-#VERSION="$VERSION"~"$COMMIT_SHORT"
-
 for RELEASE in $RELEASES; do
 	IFS=, read -a REL_NAMES <<< "$RELEASE"
 	RELEASE=${REL_NAMES[0]}
@@ -64,37 +52,9 @@ for RELEASE in $RELEASES; do
 	mkdir "$RELEASE"
 	cd "$RELEASE"
 	"$SUBSURFACE_DEBIAN_SRCDIR"/current/create-debian-build
-	for ARCH in $ARCHS; do
-		echo building subsurface_"$FULL_VER".dsc for "$RELEASE"-"$ARCH"
-		set +e
-		LOGFILE=build.log.$$."$RELEASE"-"$ARCH"
-		sudo -E pbuilder build --buildplace ~/var/build --buildresult "$OUTPUT_DIR" --basetgz ~/var/cache/pbuilder/base-"$RELEASE"-"$ARCH".tgz --aptcache ~/var/cache/aptcache subsurface_"$FULL_VER".dsc > "$LOGFILE" 2>&1
-		CODE=$?
-		set -e
-
-		if test "$CODE" -eq 0; then
-			echo build successful
-			rm -f "$LOGFILE"
-			reprepro -Vb "$REPO" -C main includedeb "$RELEASE" "$OUTPUT_DIR"/subsurface_"$FULL_VER"_"$ARCH".deb
-			reprepro -Vb "$REPO" -C main includedeb "$RELEASE" "$OUTPUT_DIR"/subsurface-dbgsym_"$FULL_VER"_"$ARCH".deb
-			test -f "$OUTPUT_DIR"/subsurface-common_"$FULL_VER"_"$ARCH".deb && reprepro -Vb "$REPO" -C main includedeb "$RELEASE" "$OUTPUT_DIR"/subsurface-common_"$FULL_VER"_"$ARCH".deb
-			test -f "$OUTPUT_DIR"/subsurface-downloader_"$FULL_VER"_"$ARCH".deb && reprepro -Vb "$REPO" -C main includedeb "$RELEASE" "$OUTPUT_DIR"/subsurface-downloader_"$FULL_VER"_"$ARCH".deb
-			test -f "$OUTPUT_DIR"/subsurface-downloader-dbgsym_"$FULL_VER"_"$ARCH".deb && reprepro -Vb "$REPO" -C main includedeb "$RELEASE" "$OUTPUT_DIR"/subsurface-downloader-dbgsym_"$FULL_VER"_"$ARCH".deb
-		else
-			echo build failed
-			echo build log: "$LOGFILE"
-			mv "$LOGFILE" ~/
-			errors+=("build failed: $LOGFILE")
-		fi
-	done
 	debsign "$OUTPUT_DIR"/subsurface_"$FULL_VER".dsc
 	reprepro -Vb "$REPO" -C main includedsc "$RELEASE" "$OUTPUT_DIR"/subsurface_"$FULL_VER".dsc
 
-	if test -d ~/var/arm-queue; then
-		echo https://subsurface.dfx.at/pool/main/s/subsurface/subsurface_"$FULL_VER".dsc > ~/var/arm-queue/.subsurface."$RELEASE".$$ || true
-		mv ~/var/arm-queue/.subsurface."$RELEASE".$$ ~/var/arm-queue/subsurface."$RELEASE" || true
-		:
-	fi
 	if test -d ~/var/src-build-q; then
 		echo https://subsurface.dfx.at/pool/main/s/subsurface/subsurface_"$FULL_VER".dsc > ~/var/src-build-q/.subsurface."$RELEASE".$$ || true
 		mv ~/var/src-build-q/.subsurface."$RELEASE".$$ ~/var/src-build-q/subsurface."$RELEASE" || true
