@@ -3,8 +3,6 @@
 set -e
 set -x
 
-declare -a errors
-
 LAST_BUILD_ID=~/.sub.last.current-qt6.build.id
 BUILDDIR=~/tmp
 REPO=~/htdocs/dfx.at/subsurface
@@ -61,11 +59,5 @@ cd ..
 rm -rf build.$$
 
 mv -f "$THIS_BUILD_ID" "$LAST_BUILD_ID"
-
-if test ${#errors[@]} -gt 0; then
-	echo errors:
-	echo "${errors[@]}"
-	exit 1
-fi
 
 exit 0
