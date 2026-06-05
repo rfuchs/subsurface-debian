@@ -3,10 +3,10 @@
 set -e
 set -x
 
-LAST_BUILD_ID=~/.sub.last.current-qt6.build.id
+LAST_BUILD_ID=~/.sub.last.current.build.id
 BUILDDIR=~/tmp
 REPO=~/htdocs/dfx.at/subsurface
-RELEASES='trixie,~bpo13+1'
+RELEASES='forky,~bpo14+1 sid, trixie,~bpo13+1 bookworm,~bpo12+1 bullseye,~bpo11+1'
 
 test -n "$SUBSURFACE_DEBIAN_SRCDIR"
 
@@ -19,7 +19,7 @@ export LAST_BUILD_ID
 export THIS_BUILD_ID="$LAST_BUILD_ID.new"
 
 set +e
-"$SUBSURFACE_DEBIAN_SRCDIR"/current-qt6/create-source-package
+"$SUBSURFACE_DEBIAN_SRCDIR"/current/create-source-package
 CODE=$?
 set -e
 
@@ -44,14 +44,14 @@ for RELEASE in $RELEASES; do
 	export FULL_VER
 	mkdir "$RELEASE"
 	cd "$RELEASE"
-	"$SUBSURFACE_DEBIAN_SRCDIR"/current-qt6/create-debian-build
-	debsign subsurface-qt6_"$FULL_VER".dsc
-	reprepro -Vb "$REPO" -C main includedsc "$RELEASE" subsurface-qt6_"$FULL_VER".dsc
+	"$SUBSURFACE_DEBIAN_SRCDIR"/current/create-debian-build
+	debsign subsurface_"$FULL_VER".dsc
+	reprepro -Vb "$REPO" -C main includedsc "$RELEASE" subsurface_"$FULL_VER".dsc
 
 	if test -d ~/var/src-build-q; then
 		mkdir -p ~/var/src-build-q/"$RELEASE"
-		echo https://subsurface.dfx.at/pool/main/s/subsurface-qt6/subsurface-qt6_"$FULL_VER".dsc > ~/var/src-build-q/"$RELEASE"/.subsurface-qt6.$$ || true
-		mv ~/var/src-build-q/"$RELEASE"/.subsurface-qt6.$$ ~/var/src-build-q/"$RELEASE"/subsurface-qt6 || true
+		echo https://subsurface.dfx.at/pool/main/s/subsurface-qt6/subsurface_"$FULL_VER".dsc > ~/var/src-build-q/"$RELEASE"/.subsurface.$$ || true
+		mv ~/var/src-build-q/"$RELEASE"/.subsurface.$$ ~/var/src-build-q/"$RELEASE"/subsurface || true
 	fi
 	cd ..
 done
