@@ -33,6 +33,18 @@ popd
 COMMIT_SHORT=${COMMIT:0:8}
 VERSION="$VERSION"~"$COMMIT_SHORT"
 
+echo "$VERSION" > version
+echo export VERSION="$VERSION"
+
+if test -n "$REPO"; then
+	ORIG="$REPO"/pool/main/s/subsurface/subsurface_"$VERSION".orig.tar.gz
+	if test -f "$ORIG"; then
+		cp -v "$ORIG" .
+		tar -xzf subsurface_"$VERSION".orig.tar.gz
+		exit 0
+	fi
+fi
+
 git clone --depth 1 --single-branch --recurse-submodules --shallow-submodules https://github.com/subsurface/googlemaps.git
 rm -rf googlemaps/.git
 
@@ -71,6 +83,3 @@ cp -va qtpositioning subsurface-"$VERSION"/qtpositioning
 cp -va irda subsurface-"$VERSION"/irda
 tar -czf subsurface_"$VERSION".orig.tar.gz subsurface-"$VERSION"
 rm -rf subsurface googlemaps qtlocation qtpositioning irda
-
-echo "$VERSION" > version
-echo export VERSION="$VERSION"
