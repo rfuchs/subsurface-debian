@@ -37,7 +37,8 @@ override_dh_auto_clean:
 	rm -f libdivecomputer/src/Makefile.in
 	rm -rf install-root
 	rm -rf libgit2/build
-	rm -rf googlemaps/build
+	rm -rf googlemaps-qt6/build
+	rm -rf googlemaps-ssrf/build
 	rm -rf subsurface-build
 
 override_dh_auto_configure:
@@ -45,7 +46,7 @@ override_dh_auto_configure:
 	(mkdir -p $(MY_INSTALL_ROOT)/include/QtLocation/private; mkdir -p $(MY_INSTALL_ROOT)/include/QtPositioning/private; \
 		find qtlocation/src/location -name '*_p.h' -print0 | xargs -0 cp -vt $(MY_INSTALL_ROOT)/include/QtLocation/private; \
 		find qtpositioning/src/positioning -name '*_p.h' -print0 | xargs -0 cp -vt $(MY_INSTALL_ROOT)/include/QtPositioning/private)
-	(mkdir -p googlemaps/build ; cd googlemaps/build ; \
+	(mkdir -p googlemaps-ssrf/build ; cd googlemaps-ssrf/build ; \
 		qmake "INCLUDEPATH=../../QtHeaders/$(QTVERSION)/include $(MY_INSTALL_ROOT)/include" ../googlemaps.pro ; \
 		rm -rf $(QTLOC_GIT) > /dev/null 2>&1 ; \
 		make -j`nproc` ; \
@@ -94,7 +95,7 @@ override_dh_auto_build:
 
 override_dh_auto_install:
 	(cd subsurface-build ; DESTDIR=$(CURDIR)/debian/subsurface $(MAKE) install)
-	(cd googlemaps/build ; INSTALL_ROOT=$(CURDIR)/debian/subsurface $(MAKE) install)
+	(cd googlemaps-ssrf/build ; INSTALL_ROOT=$(CURDIR)/debian/subsurface $(MAKE) install)
 	(cd downloader-build ; DESTDIR=$(CURDIR)/debian/subsurface-downloader $(MAKE) install)
 	mkdir -p $(CURDIR)/debian/subsurface-common/usr/share
 	mv -fv $(CURDIR)/debian/subsurface/usr/share/subsurface $(CURDIR)/debian/subsurface-common/usr/share/

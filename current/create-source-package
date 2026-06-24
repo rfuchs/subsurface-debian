@@ -36,7 +36,7 @@ VERSION="$VERSION"~"$COMMIT_SHORT"
 echo "$VERSION" > version
 echo export VERSION="$VERSION"
 
-if test -n "$REPO"; then
+if test -n "$REPO" -a -z "$REBUILD"; then
 	ORIG="$REPO"/pool/main/s/subsurface/subsurface_"$VERSION".orig.tar.gz
 	if test -f "$ORIG"; then
 		cp -v "$ORIG" .
@@ -45,13 +45,23 @@ if test -n "$REPO"; then
 	fi
 fi
 
-git clone --depth 1 --single-branch --recurse-submodules --shallow-submodules https://github.com/subsurface/googlemaps.git
-rm -rf googlemaps/.git
+git clone --depth 1 --single-branch --recurse-submodules --shallow-submodules https://github.com/subsurface/googlemaps.git googlemaps-ssrf
+rm -rf googlemaps-ssrf/.git
+
+git clone --depth 1 --single-branch --recurse-submodules --shallow-submodules https://github.com/vladest/googlemaps.git googlemaps-qt6
+rm -rf googlemaps-qt6/.git
 
 #git clone --depth 1 --single-branch --recurse-submodules --shallow-submodules https://github.com/qt/qtlocation.git
 git clone --single-branch --recurse-submodules --shallow-submodules https://github.com/qt/qtlocation.git
 pushd qtlocation
 git checkout 4b42b88f6b
+rm -rf .git
+popd
+
+#git clone --depth 1 --single-branch --recurse-submodules --shallow-submodules https://github.com/qt/qtlocation.git
+git clone --single-branch --recurse-submodules --shallow-submodules https://github.com/qt/qtlocation.git qtlocation-qt6
+pushd qtlocation-qt6
+git checkout f32bfdb888
 rm -rf .git
 popd
 
@@ -73,13 +83,16 @@ rm -rf subsurface/.git
 rm -rf subsurface/libdivecomputer/.github
 rm -rf subsurface/libdivecomputer/.git
 rm -rf qtlocation/.git
+rm -rf qtlocation-qt6/.git
 rm -rf qtpositioning/.git
 rm -rf irda/.git
  
 cp -va subsurface/. subsurface-"$VERSION"
-cp -va googlemaps subsurface-"$VERSION"/googlemaps
+cp -va googlemaps-ssrf subsurface-"$VERSION"/googlemaps-ssrf
+cp -va googlemaps-qt6 subsurface-"$VERSION"/googlemaps-qt6
 cp -va qtlocation subsurface-"$VERSION"/qtlocation
+cp -va qtlocation-qt6 subsurface-"$VERSION"/qtlocation-qt6
 cp -va qtpositioning subsurface-"$VERSION"/qtpositioning
 cp -va irda subsurface-"$VERSION"/irda
 tar -czf subsurface_"$VERSION".orig.tar.gz subsurface-"$VERSION"
-rm -rf subsurface googlemaps qtlocation qtpositioning irda
+rm -rf subsurface googlemaps-ssrf googlemaps-qt6 qtlocation qtlocation-qt6 qtpositioning irda

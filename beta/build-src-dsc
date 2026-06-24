@@ -46,18 +46,25 @@ for RELEASE in $RELEASES; do
 	cd "$RELEASE"
 	"$SUBSURFACE_DEBIAN_SRCDIR"/beta/create-debian-build
 	debsign subsurface-beta_"$FULL_VER".dsc
-	reprepro -Vb "$REPO" -C main includedsc "$RELEASE" subsurface-beta_"$FULL_VER".dsc
 
-	if test -d ~/var/src-build-q; then
-		mkdir -p ~/var/src-build-q/"$RELEASE"
-		echo https://subsurface.dfx.at/pool/main/s/subsurface-beta/subsurface-beta_"$FULL_VER".dsc > ~/var/src-build-q/"$RELEASE"/.subsurface-beta.$$ || true
-		mv ~/var/src-build-q/"$RELEASE"/.subsurface-beta.$$ ~/var/src-build-q/"$RELEASE"/subsurface-beta || true
+	if test -z "$SKIP_REPO"; then
+		reprepro -Vb "$REPO" -C main includedsc "$RELEASE" subsurface-beta_"$FULL_VER".dsc
+
+		if test -d ~/var/src-build-q; then
+			mkdir -p ~/var/src-build-q/"$RELEASE"
+			echo https://subsurface.dfx.at/pool/main/s/subsurface-beta/subsurface-beta_"$FULL_VER".dsc > ~/var/src-build-q/"$RELEASE"/.subsurface-beta.$$ || true
+			mv ~/var/src-build-q/"$RELEASE"/.subsurface-beta.$$ ~/var/src-build-q/"$RELEASE"/subsurface-beta || true
+		fi
 	fi
+
 	cd ..
 done
 
 cd ..
-rm -rf build.$$
+
+if test -z "$SKIP_REPO"; then
+	rm -rf build.$$
+fi
 
 mv -f "$THIS_BUILD_ID" "$LAST_BUILD_ID"
 

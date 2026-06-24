@@ -18,6 +18,12 @@ cd build.$$
 export LAST_BUILD_ID
 export THIS_BUILD_ID="$LAST_BUILD_ID.new"
 
+if test -z "$BUILD"; then
+	BUILD=1
+fi
+
+export REPO
+
 set +e
 "$SUBSURFACE_DEBIAN_SRCDIR"/current-qt6/create-source-package
 CODE=$?
@@ -38,7 +44,7 @@ for RELEASE in $RELEASES; do
 	IFS=, read -a REL_NAMES <<< "$RELEASE"
 	RELEASE=${REL_NAMES[0]}
 	REL_CODE=${REL_NAMES[1]}
-	FULL_VER="$VERSION"-1"$REL_CODE"
+	FULL_VER="$VERSION"-"$BUILD""$REL_CODE"
 	export RELEASE
 	export REL_CODE
 	export FULL_VER
@@ -46,18 +52,25 @@ for RELEASE in $RELEASES; do
 	cd "$RELEASE"
 	"$SUBSURFACE_DEBIAN_SRCDIR"/current-qt6/create-debian-build
 	debsign subsurface-qt6_"$FULL_VER".dsc
-	reprepro -Vb "$REPO" -C main includedsc "$RELEASE" subsurface-qt6_"$FULL_VER".dsc
 
-	if test -d ~/var/src-build-q; then
-		mkdir -p ~/var/src-build-q/"$RELEASE"
-		echo https://subsurface.dfx.at/pool/main/s/subsurface-qt6/subsurface-qt6_"$FULL_VER".dsc > ~/var/src-build-q/"$RELEASE"/.subsurface-qt6.$$ || true
-		mv ~/var/src-build-q/"$RELEASE"/.subsurface-qt6.$$ ~/var/src-build-q/"$RELEASE"/subsurface-qt6 || true
+	if test -z "$SKIP_REPO"; then
+		reprepro -Vb "$REPO" -C main includedsc "$RELEASE" subsurface-qt6_"$FULL_VER".dsc
+
+		if test -d ~/var/src-build-q; then
+			mkdir -p ~/var/src-build-q/"$RELEASE"
+			echo https://subsurface.dfx.at/pool/main/s/subsurface-qt6/subsurface-qt6_"$FULL_VER".dsc > ~/var/src-build-q/"$RELEASE"/.subsurface-qt6.$$ || true
+			mv ~/var/src-build-q/"$RELEASE"/.subsurface-qt6.$$ ~/var/src-build-q/"$RELEASE"/subsurface-qt6 || true
+		fi
 	fi
+
 	cd ..
 done
 
 cd ..
-rm -rf build.$$
+
+if test -z "$SKIP_REPO"; then
+	rm -rf build.$$
+fi
 
 mv -f "$THIS_BUILD_ID" "$LAST_BUILD_ID"
 

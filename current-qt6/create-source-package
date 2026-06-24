@@ -33,20 +33,25 @@ popd
 COMMIT_SHORT=${COMMIT:0:8}
 VERSION="$VERSION"~"$COMMIT_SHORT"
 
-git clone --depth 1 --single-branch --recurse-submodules --shallow-submodules https://github.com/subsurface/googlemaps.git
+echo "$VERSION" > version
+echo export VERSION="$VERSION"
+
+if test -n "$REPO" -a -z "$REBUILD"; then
+	ORIG="$REPO"/pool/main/s/subsurface/subsurface-qt6_"$VERSION".orig.tar.gz
+	if test -f "$ORIG"; then
+		cp -v "$ORIG" .
+		tar -xzf subsurface-qt6_"$VERSION".orig.tar.gz
+		exit 0
+	fi
+fi
+
+git clone --depth 1 --single-branch --recurse-submodules --shallow-submodules https://github.com/vladest/googlemaps.git
 rm -rf googlemaps/.git
 
 #git clone --depth 1 --single-branch --recurse-submodules --shallow-submodules https://github.com/qt/qtlocation.git
 git clone --single-branch --recurse-submodules --shallow-submodules https://github.com/qt/qtlocation.git
 pushd qtlocation
-git checkout 4b42b88f6b
-rm -rf .git
-popd
-
-#git clone --depth 1 --single-branch --recurse-submodules --shallow-submodules https://github.com/qt/qtpositioning.git
-git clone --single-branch --recurse-submodules --shallow-submodules https://github.com/qt/qtpositioning.git
-pushd qtpositioning
-git checkout cfa650683e
+git checkout f32bfdb888
 rm -rf .git
 popd
 
@@ -61,16 +66,11 @@ rm -rf subsurface/.git
 rm -rf subsurface/libdivecomputer/.github
 rm -rf subsurface/libdivecomputer/.git
 rm -rf qtlocation/.git
-rm -rf qtpositioning/.git
 rm -rf irda/.git
  
 cp -va subsurface/. subsurface-qt6-"$VERSION"
 cp -va googlemaps subsurface-qt6-"$VERSION"/googlemaps
 cp -va qtlocation subsurface-qt6-"$VERSION"/qtlocation
-cp -va qtpositioning subsurface-qt6-"$VERSION"/qtpositioning
 cp -va irda subsurface-qt6-"$VERSION"/irda
 tar -czf subsurface-qt6_"$VERSION".orig.tar.gz subsurface-qt6-"$VERSION"
-rm -rf subsurface googlemaps qtlocation qtpositioning irda
-
-echo "$VERSION" > version
-echo export VERSION="$VERSION"
+rm -rf subsurface googlemaps qtlocation irda

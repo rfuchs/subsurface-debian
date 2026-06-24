@@ -1,4 +1,4 @@
-Source: subsurface-qt6-beta
+Source: subsurface-beta
 Section: utils
 Priority: optional
 Maintainer: Richard Fuchs <dfx@dfx.at>
@@ -14,6 +14,7 @@ Build-Depends: asciidoc,
                libbluetooth-dev,
                libcurl4-openssl-dev,
                libgit2-dev,
+               libgles-dev,
                libmtp-dev,
                libsoup-3.0-dev,
                libsqlite3-dev,
@@ -47,16 +48,17 @@ Build-Depends: asciidoc,
 Standards-Version: 4.5.1
 Homepage: http://subsurface-divelog.org
 
-Package: subsurface-qt6-beta
+Package: subsurface-beta
 Architecture: any
 Depends: qml6-module-qtlocation,
          qml6-module-qtpositioning,
          qml6-module-qtquick,
-         subsurface-qt6-beta-common (= ${source:Version}),
+         subsurface-beta-common (= ${source:Version}),
          ${misc:Depends},
          ${shlibs:Depends}
-Conflicts: subsurface, subsurface-beta
-Replaces: subsurface, subsurface-beta
+Conflicts: subsurface, subsurface-qt6-beta
+Replaces: subsurface, subsurface-qt6-beta
+Provides: subsurface-qt6-beta
 Description: Dive log program
  Subsurface is an open source divelog program that runs on Windows, Mac and Linux.
  Subsurface is able to track single- and multi-tank dives using air, Nitrox or
@@ -64,15 +66,16 @@ Description: Dive log program
  masters and dive buddies and enables the user to rate dives and provide
  additional dive notes.
 
-Package: subsurface-qt6-beta-downloader
+Package: subsurface-beta-downloader
 Architecture: any
 Depends: libcgi-pm-perl,
          libgit-repository-perl,
-         subsurface-qt6-beta-common (= ${source:Version}),
+         subsurface-beta-common (= ${source:Version}),
          ${misc:Depends},
          ${shlibs:Depends}
-Conflicts: subsurface-downloader, subsurface-downloader-beta
-Replaces: subsurface-downloader, subsurface-downloader-beta
+Conflicts: subsurface-downloader, subsurface-qt6-beta-downloader
+Replaces: subsurface-downloader, subsurface-qt6-beta-downloader
+Provides: subsurface-qt6-beta-downloader
 Description: Dive log program - headless downloader
  Subsurface is an open source divelog program that runs on Windows, Mac and Linux.
  Subsurface is able to track single- and multi-tank dives using air, Nitrox or
@@ -80,11 +83,12 @@ Description: Dive log program - headless downloader
  masters and dive buddies and enables the user to rate dives and provide
  additional dive notes.
 
-Package: subsurface-qt6-beta-common
+Package: subsurface-beta-common
 Architecture: any
 Depends: ${misc:Depends}, ${shlibs:Depends}
-Conflicts: subsurface-beta-common, subsurface-common
-Replaces: subsurface-beta-common, subsurface-common
+Conflicts: subsurface-qt6-beta-common, subsurface-common
+Replaces: subsurface-qt6-beta-common, subsurface-common
+Provides: subsurface-qt6-beta-common
 Breaks: subsurface-qt6-beta (<< 202401230000)
 Description: Dive log program - common files
  Subsurface is an open source divelog program that runs on Windows, Mac and Linux.
