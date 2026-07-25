@@ -34,32 +34,73 @@ pushd subsurface
 ./scripts/get-version.sh 1 > .latest-subsurface-buildnumber
 mv -f .latest-subsurface-buildnumber latest-subsurface-buildnumber
 echo dfx > latest-subsurface-buildnumber-extension
+qlitehtml=$(grep ^CURRENT_QLITEHTML= scripts/get-dep-lib.sh | cut -d= -f2 | sed 's/"//g')
 popd
 
-git clone --depth 1 --single-branch --recurse-submodules --shallow-submodules https://github.com/subsurface/googlemaps.git googlemaps-ssrf
-rm -rf googlemaps-ssrf/.git
+git clone \
+	--branch master \
+	--depth 1 \
+	--single-branch \
+	--recurse-submodules \
+	--shallow-submodules \
+	https://github.com/subsurface/googlemaps.git googlemaps-ssrf
+pushd googlemaps-ssrf
+rm -rf .git
+popd
 
-git clone --depth 1 --single-branch --recurse-submodules --shallow-submodules https://github.com/vladest/googlemaps.git googlemaps-qt6
-rm -rf googlemaps-qt6/.git
+git clone \
+	--branch qt6-upstream \
+	--depth 1 \
+	--single-branch \
+	--recurse-submodules \
+	--shallow-submodules \
+	https://github.com/subsurface/googlemaps.git googlemaps-qt6
+pushd googlemaps-qt6
+rm -rf .git
+popd
 
-#git clone --depth 1 --single-branch --recurse-submodules --shallow-submodules https://github.com/qt/qtlocation.git
-git clone --single-branch --recurse-submodules --shallow-submodules https://github.com/qt/qtlocation.git
+git clone \
+	--revision 4b42b88f6be0bc64bc3b945814977a63f93e3f10 \
+	--depth 1 \
+	--single-branch \
+	--recurse-submodules \
+	--shallow-submodules \
+	https://github.com/qt/qtlocation.git
 pushd qtlocation
-git checkout 4b42b88f6b
 rm -rf .git
 popd
 
-#git clone --depth 1 --single-branch --recurse-submodules --shallow-submodules https://github.com/qt/qtlocation.git
-git clone --single-branch --recurse-submodules --shallow-submodules https://github.com/qt/qtlocation.git qtlocation-qt6
+git clone \
+	--revision f32bfdb8887943f3f0b7ea32ef57c0ebec5683aa \
+	--depth 1 \
+	--single-branch \
+	--recurse-submodules \
+	--shallow-submodules \
+	https://github.com/qt/qtlocation.git qtlocation-qt6
 pushd qtlocation-qt6
-git checkout f32bfdb888
 rm -rf .git
 popd
 
-#git clone --depth 1 --single-branch --recurse-submodules --shallow-submodules https://github.com/qt/qtpositioning.git
-git clone --single-branch --recurse-submodules --shallow-submodules https://github.com/qt/qtpositioning.git
+git clone \
+	--revision cfa650683e1c3f5e7ae8a8ab6cf1ac35a3c0c06d \
+	--depth 1 \
+	--single-branch \
+	--recurse-submodules \
+	--shallow-submodules \
+	https://github.com/qt/qtpositioning.git
 pushd qtpositioning
-git checkout cfa650683e
+rm -rf .git
+popd
+
+git clone \
+	--revision "$qlitehtml" \
+	--depth 1 \
+	--single-branch \
+	--recurse-submodules \
+	--shallow-submodules \
+	https://github.com/dirkhh/qlitehtml.git
+pushd qlitehtml
+rm -rf src/3rdparty/litehtml/.git
 rm -rf .git
 popd
 
@@ -81,11 +122,12 @@ rm -rf irda/.git
 cp -va subsurface/. subsurface-beta-"$VERSION"
 cp -va googlemaps-ssrf subsurface-beta-"$VERSION"/googlemaps-ssrf
 cp -va googlemaps-qt6 subsurface-beta-"$VERSION"/googlemaps-qt6
+cp -va qlitehtml subsurface-beta-"$VERSION"/qlitehtml
 cp -va qtlocation subsurface-beta-"$VERSION"/qtlocation
 cp -va qtlocation-qt6 subsurface-beta-"$VERSION"/qtlocation-qt6
 cp -va qtpositioning subsurface-beta-"$VERSION"/qtpositioning
 cp -va irda subsurface-beta-"$VERSION"/irda
 tar -czf subsurface-beta_"$VERSION".orig.tar.gz subsurface-beta-"$VERSION"
-rm -rf subsurface googlemaps-ssrf googlemaps-qt6 qtlocation qtlocation-qt6 qtpositioning irda
+rm -rf subsurface googlemaps-ssrf googlemaps-qt6 qtlocation qtlocation-qt6 qtpositioning irda qlitehtml
 
 echo export VERSION="$VERSION"

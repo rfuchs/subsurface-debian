@@ -6,10 +6,10 @@ set -x
 PACKAGE=subsurface-beta
 BRANCH=beta
 
-test -n "$RELEASE"
+test -n "$RELEASE" # sid, trixie, ...
 test -n "$SUBSURFACE_DEBIAN_SRCDIR"
 test -n "$VERSION" # VERSION=$(date +%Y%m%d%H%H)
-test -n "$FULL_VER"
+test -n "$FULL_VER" # "$VERSION"-1, "$VERSION"-1~bpo13
 
 test -f ../"$PACKAGE"_"$VERSION".orig.tar.gz
 test -d ../"$PACKAGE"-"$VERSION"
