@@ -31,15 +31,40 @@ pushd subsurface
 ./scripts/get-version.sh 1 > .latest-subsurface-buildnumber
 mv -f .latest-subsurface-buildnumber latest-subsurface-buildnumber
 echo dfx > latest-subsurface-buildnumber-extension
+qlitehtml=$(grep ^CURRENT_QLITEHTML= scripts/get-dep-lib.sh | cut -d= -f2 | sed 's/"//g')
 popd
 
-git clone --depth 1 --single-branch --recurse-submodules --shallow-submodules https://github.com/vladest/googlemaps.git
-rm -rf googlemaps/.git
+git clone \
+	--branch qt6-upstream \
+	--depth 1 \
+	--single-branch \
+	--recurse-submodules \
+	--shallow-submodules \
+	https://github.com/subsurface/googlemaps.git googlemaps-qt6
+pushd googlemaps-qt6
+rm -rf .git
+popd
 
-#git clone --depth 1 --single-branch --recurse-submodules --shallow-submodules https://github.com/qt/qtlocation.git
-git clone --single-branch --recurse-submodules --shallow-submodules https://github.com/qt/qtlocation.git
-pushd qtlocation
-git checkout f32bfdb888
+git clone \
+	--revision f32bfdb8887943f3f0b7ea32ef57c0ebec5683aa \
+	--depth 1 \
+	--single-branch \
+	--recurse-submodules \
+	--shallow-submodules \
+	https://github.com/qt/qtlocation.git qtlocation-qt6
+pushd qtlocation-qt6
+rm -rf .git
+popd
+
+git clone \
+	--revision "$qlitehtml" \
+	--depth 1 \
+	--single-branch \
+	--recurse-submodules \
+	--shallow-submodules \
+	https://github.com/dirkhh/qlitehtml.git
+pushd qlitehtml
+rm -rf src/3rdparty/litehtml/.git
 rm -rf .git
 popd
 
@@ -57,10 +82,11 @@ rm -rf qtlocation/.git
 rm -rf irda/.git
 
 cp -va subsurface/. subsurface-qt6-beta-"$VERSION"
-cp -va googlemaps subsurface-qt6-beta-"$VERSION"/googlemaps
-cp -va qtlocation subsurface-qt6-beta-"$VERSION"/qtlocation
+cp -va googlemaps-qt6 subsurface-qt6-beta-"$VERSION"/googlemaps-qt6
+cp -va qlitehtml subsurface-beta-"$VERSION"/qlitehtml
+cp -va qtlocation-qt6 subsurface-qt6-beta-"$VERSION"/qtlocation-qt6
 cp -va irda subsurface-qt6-beta-"$VERSION"/irda
 tar -czf subsurface-qt6-beta_"$VERSION".orig.tar.gz subsurface-qt6-beta-"$VERSION"
-rm -rf subsurface googlemaps qtlocation irda
+rm -rf subsurface googlemaps-ssrf googlemaps-qt6 qtlocation qtlocation-qt6 qtpositioning irda qlitehtml
 
 echo export VERSION="$VERSION"
