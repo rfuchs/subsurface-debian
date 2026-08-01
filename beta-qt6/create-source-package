@@ -83,7 +83,7 @@ rm -rf irda/.git
 
 cp -va subsurface/. subsurface-qt6-beta-"$VERSION"
 cp -va googlemaps-qt6 subsurface-qt6-beta-"$VERSION"/googlemaps-qt6
-cp -va qlitehtml subsurface-beta-"$VERSION"/qlitehtml
+cp -va qlitehtml subsurface-qt6-beta-"$VERSION"/qlitehtml
 cp -va qtlocation-qt6 subsurface-qt6-beta-"$VERSION"/qtlocation-qt6
 cp -va irda subsurface-qt6-beta-"$VERSION"/irda
 tar -czf subsurface-qt6-beta_"$VERSION".orig.tar.gz subsurface-qt6-beta-"$VERSION"
