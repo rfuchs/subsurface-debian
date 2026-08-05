@@ -97,7 +97,7 @@ override_dh_auto_build:
 
 override_dh_auto_install:
 	(cd subsurface-build ; DESTDIR=$(CURDIR)/debian/subsurface-qt6-beta $(MAKE) install)
-	(cd googlemaps/build ; INSTALL_ROOT=$(CURDIR)/debian/subsurface-qt6-beta $(MAKE) install)
+	(cd googlemaps-qt6/build ; INSTALL_ROOT=$(CURDIR)/debian/subsurface-qt6-beta $(MAKE) install)
 	(cd downloader-build ; DESTDIR=$(CURDIR)/debian/subsurface-qt6-beta-downloader $(MAKE) install)
 	mkdir -p $(CURDIR)/debian/subsurface-qt6-beta/usr/lib/x86_64-linux-gnu
 	cp -va $(MY_INSTALL_ROOT)/qlitehtml/lib/* $(CURDIR)/debian/subsurface-qt6-beta/usr/lib
